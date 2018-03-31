@@ -6,8 +6,8 @@ import {
     TextInput,
 } from 'react-native';
 import { Icon } from 'native-base';
-import FloatLabelTextInput from 'react-native-floating-label-text-input';
-import { commonStrings, styles } from '../res';
+import { TextField } from 'react-native-material-textfield';
+import { commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button } from '../components/common';
 import { toTitleCase } from '../Utils';
@@ -64,37 +64,66 @@ export default class SickOrInjured extends Component {
                     </View>
 
                     <View style={{ padding: 5 }}>
-                        <FloatLabelTextInput
-                            style={styles.floatingTextStyle}
-                            style={styles.floatingTextStyle}
-                            placeholder={'Treatment Notes'}
-                            ref='treatment'
-                            onChangeTextValue={
-                                (treatmentNotes) => this.setState({ treatmentNotes })
-                            }
+                        <TextField
+                            ref={'treatment'}
+                            label='Treatment Notes'
+                            value={this.state.treatmentNotes}
+                            onChangeText={(treatmentNotes) => this.setState({ treatmentNotes })}
+                            enablesReturnKeyAutomatically={true}
+                            tintColor={ColorSchema.THEME_COLOR_ONE}
+                            baseColor={ColorSchema.THEME_COLOR_FOUR}
+                            textColor={ColorSchema.THEME_COLOR_ONE}
+                            fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                            labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                            labelHeight={15}
                             onSubmitEditing={() => { this.refs.labResults.focus(); }}
+                            returnKeyType='next'
                         />
-                        <FloatLabelTextInput
-                            style={styles.floatingTextStyle}
-                            placeholder={'Lab/Test Results'}
-                            ref='labResults'
-                            onChangeTextValue={(labResults) => this.setState({ labResults })}
+                        <TextField
+                            ref={'labResults'}
+                            label='Lab/Test Results'
+                            value={this.state.labResults}
+                            onChangeText={(labResults) => this.setState({ labResults })}
+                            enablesReturnKeyAutomatically={true}
+                            tintColor={ColorSchema.THEME_COLOR_ONE}
+                            baseColor={ColorSchema.THEME_COLOR_FOUR}
+                            textColor={ColorSchema.THEME_COLOR_ONE}
+                            fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                            labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                            labelHeight={15}
                             onSubmitEditing={() => { this.refs.medication.focus(); }}
+                            returnKeyType='next'
                         />
-                        <FloatLabelTextInput
-                            style={styles.floatingTextStyle}
-                            placeholder={'Medication'}
-                            ref='medication'
-                            onChangeTextValue={(medication) => this.setState({ medication })}
+                        <TextField
+                            ref={'medication'}
+                            label='Medication'
+                            value={this.state.labRemedicationsults}
+                            onChangeText={(medication) => this.setState({ medication })}
+                            enablesReturnKeyAutomatically={true}
+                            tintColor={ColorSchema.THEME_COLOR_ONE}
+                            baseColor={ColorSchema.THEME_COLOR_FOUR}
+                            textColor={ColorSchema.THEME_COLOR_ONE}
+                            fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                            labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                            labelHeight={15}
                             onSubmitEditing={() => { this.refs.comments.focus(); }}
+                            returnKeyType='next'
                         />
-                        <FloatLabelTextInput
-                            style={styles.floatingTextStyle}
-                            placeholder={'Comments'}
-                            ref='comments'
-                            onChangeTextValue={(comments) => this.setState({ comments })}
+                        <TextField
+                            ref={'comments'}
+                            label='Comments'
+                            value={this.state.comments}
+                            onChangeText={(comments) => this.setState({ comments })}
+                            enablesReturnKeyAutomatically={true}
+                            tintColor={ColorSchema.THEME_COLOR_ONE}
+                            baseColor={ColorSchema.THEME_COLOR_FOUR}
+                            textColor={ColorSchema.THEME_COLOR_ONE}
+                            fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                            labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                            labelHeight={15}
+                            returnKeyType='done'
                         />
-
+                        
                         <Button
                             btnStyle={{
                                 marginTop: 30,

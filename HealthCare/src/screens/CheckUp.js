@@ -5,7 +5,7 @@ import {
     View,
     Text,
 } from 'react-native';
-import FloatLabelTextField from 'react-native-floating-label-text-input';
+import { TextField } from 'react-native-material-textfield';
 import { Button } from '../components/common';
 import { styles, commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
@@ -40,129 +40,201 @@ export default class CheckUp extends Component {
         };
     }
 
-    myFocusFunction() {
-        //on Focus
-    }
-
-    render() {        
+    render() {
         const {
-            buttonText,
             containerStyle,
-            columnContainerStyle, 
-            buttonStyle 
+            columnContainerStyle,
+            buttonStyle
         } = stylesSheet;
 
         return (
             <ScrollView style={{ backgroundColor: ColorSchema.THEME_COLOR_TWO }}>
                 <View style={styles.container}>
-                    <Text 
-                        style={[styles.text, { color: ColorSchema.THEME_COLOR_ONE }]}
+                    <Text
+                        style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_ONE }]}
                     >
                         JOHN SMITH
                     </Text>
-
-                    <View>
-                        <Text 
-                            style={buttonText} 
-                            onPress={() => console.log('vitals')}
-                        >
-                            BACK TO VITALS
-                        </Text>
-                    </View>
+                    <Button
+                        btnStyle={{
+                            borderWidth: 1,
+                            borderColor: ColorSchema.THEME_COLOR_ONE,
+                            backgroundColor: ColorSchema.TRANSPARENT_COLOR,
+                            width: '50%',
+                            marginBottom: 5,
+                        }}
+                        txtStyle={{ color: ColorSchema.THEME_COLOR_ONE }}
+                        onPress={() => console.log('vitals')}
+                    >
+                        BACK TO VITALS
+                    </Button>
 
                     <View style={containerStyle}>
                         <View style={columnContainerStyle} >
-                            <FloatLabelTextField
-                                placeholder={'Blood Pressure'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={
-                                    (bloodPressure) => this.setState({ bloodPressure })
-                                }
-                                onFocus={this.myFocusFunction()}
+                            <TextField
+                                label='Blood Pressure'
+                                value={this.state.bloodPressure}
+                                onChangeText={(bloodPressure) => this.setState({ bloodPressure })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
                                 onSubmitEditing={() => { this.refs.weight.focus(); }}
+                                returnKeyType='next'
                             />
-                            <FloatLabelTextField
-                                placeholder={'Weight'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={(weight) => this.setState({ weight })}
-                                onFocus={this.myFocusFunction()}
+
+                            <TextField
                                 ref={'weight'}
+                                label='Weight'
+                                value={this.state.weight}
+                                onChangeText={(weight) => this.setState({ weight })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
                                 onSubmitEditing={() => { this.refs.spO2.focus(); }}
+                                returnKeyType='next'
                             />
-                            <FloatLabelTextField
-                                placeholder={'SpO2'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={(SpO2) => this.setState({ SpO2 })}
-                                onFocus={this.myFocusFunction()}
+
+                            <TextField
                                 ref={'spO2'}
+                                label='SpO2'
+                                value={this.state.SpO2}
+                                onChangeText={(SpO2) => this.setState({ SpO2 })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
                                 onSubmitEditing={() => { this.refs.cholesterol.focus(); }}
+                                returnKeyType='next'
                             />
-                            <FloatLabelTextField
-                                placeholder={'Cholesterol'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={(cholesterol) => this.setState({ cholesterol })}
-                                onFocus={this.myFocusFunction()}
+
+                            <TextField
                                 ref={'cholesterol'}
+                                label='Cholesterol'
+                                value={this.state.cholesterol}
+                                onChangeText={(cholesterol) => this.setState({ cholesterol })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
                                 onSubmitEditing={() => { this.refs.otherTest.focus(); }}
+                                returnKeyType='next'
                             />
-                            <FloatLabelTextField
-                                placeholder={'Other Test'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={(otherTest) => this.setState({ otherTest })}
-                                onFocus={this.myFocusFunction()}
+
+                            <TextField
                                 ref={'otherTest'}
+                                label='Other Test'
+                                value={this.state.otherTest}
+                                onChangeText={(otherTest) => this.setState({ otherTest })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
+                                returnKeyType='next'
                             />
+
                         </View>
 
                         <View style={columnContainerStyle}>
-                            <FloatLabelTextField
-                                placeholder={'Heart Rate'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={(heartRate) => this.setState({ heartRate })}
-                                onFocus={this.myFocusFunction()}
+                            <TextField
+                                label='Heart Rate'
+                                value={this.state.heartRate}
+                                onChangeText={(heartRate) => this.setState({ heartRate })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
                                 onSubmitEditing={() => { this.refs.waistCircumference.focus(); }}
+                                returnKeyType='next'
                             />
-                            <FloatLabelTextField
-                                placeholder={'Waist Circumference'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={
-                                    (waistCircumference) => this.setState({ waistCircumference })
-                                }
-                                onFocus={this.myFocusFunction()}
+                            <TextField
                                 ref={'waistCircumference'}
-                                onSubmitEditing={() => { this.refs.fev.focus(); }}
-                            />
-                            <FloatLabelTextField
-                                placeholder={'F.E.V'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={(fev) => this.setState({ fev })}
-                                onFocus={this.myFocusFunction()}
-                                ref={'fev'}
-                                onSubmitEditing={() => { this.refs.bloodGlucose.focus(); }}
-                            />
-                            <FloatLabelTextField
-                                placeholder={'Blood Glucose'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={
-                                    (bloodGlucose) => this.setState({ bloodGlucose })
+                                label='Waist Circumference'
+                                value={this.state.waistCircumference}
+                                onChangeText={
+                                    (waistCircumference) => this.setState({
+                                        waistCircumference
+                                    })
                                 }
-                                onFocus={this.myFocusFunction()}
-                                ref={'bloodGlucose'}
-                                onSubmitEditing={() => { this.refs.notes.focus(); }}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
+                                onSubmitEditing={() => { this.refs.fev.focus(); }}
+                                returnKeyType='next'
                             />
-                            <FloatLabelTextField
-                                placeholder={'Notes'}
-                                style={styles.floatingTextStyle}
-                                onChangeTextValue={(notes) => this.setState({ notes })}
-                                onFocus={this.myFocusFunction()}
-                                ref={'notes'}                            
+                            <TextField
+                                ref={'fev'}
+                                label='F.E.V'
+                                value={this.state.fev}
+                                onChangeText={(fev) => this.setState({ fev })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
+                                onSubmitEditing={() => { this.refs.bloodGlucose.focus(); }}
+                                returnKeyType='next'
+                            />
+                            <TextField
+                                ref={'bloodGlucose'}
+                                label='Blood Glucose'
+                                value={this.state.bloodGlucose}
+                                onChangeText={(bloodGlucose) => this.setState({ bloodGlucose })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
+                                onSubmitEditing={() => { this.refs.notes.focus(); }}
+                                returnKeyType='next'
+                            />
+                            <TextField
+                                ref={'notes'}
+                                label='Notes'
+                                value={this.state.notes}
+                                onChangeText={(notes) => this.setState({ notes })}
+                                enablesReturnKeyAutomatically={true}
+                                tintColor={ColorSchema.THEME_COLOR_ONE}
+                                baseColor={ColorSchema.THEME_COLOR_FOUR}
+                                textColor={ColorSchema.THEME_COLOR_ONE}
+                                fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                                labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                                labelHeight={15}
+                                returnKeyType='done'
                             />
                         </View>
 
                     </View>
 
                     <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
-                        <Button 
+                        <Button
                             btnStyle={buttonStyle}
                             txtStyle={styles.textSize}
                             onPress={() => console.log('Submited')}
@@ -171,9 +243,9 @@ export default class CheckUp extends Component {
                         </Button>
 
                         <Button
-                             btnStyle={[buttonStyle, { width: '60%' }]}
-                             txtStyle={styles.textSize} 
-                             onPress={() => console.log('Sick or Injured')}
+                            btnStyle={[buttonStyle, { width: '60%' }]}
+                            txtStyle={styles.textSize}
+                            onPress={() => console.log('Sick or Injured')}
                         >
                             SICK OR INJURED
                         </Button>
@@ -187,7 +259,7 @@ export default class CheckUp extends Component {
 const stylesSheet = StyleSheet.create({
 
     containerStyle: {
-        flex: 1, 
+        flex: 1,
         flexDirection: 'row'
     },
     columnContainerStyle: {
@@ -198,16 +270,5 @@ const stylesSheet = StyleSheet.create({
     buttonStyle: {
         paddingLeft: 20,
         paddingRight: 20
-    },
-    buttonText: {        
-        alignSelf: 'center',
-        textAlign: 'center',
-        padding: 10,
-        fontSize: ColorSchema.THEME_FONT_SIZE_ONE,
-        borderRadius: ColorSchema.BORDER_RADIUS,
-        borderWidth: 2,
-        borderColor: ColorSchema.THEME_COLOR_ONE,
-        color: ColorSchema.THEME_COLOR_ONE,
-        backgroundColor: ColorSchema.TRANSPARENT_COLOR,
     },
 });

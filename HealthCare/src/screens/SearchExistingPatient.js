@@ -5,8 +5,7 @@ import {
     View,
     ScrollView,
 } from 'react-native';
-import FloatLabelTextInput from 'react-native-floating-label-text-input';
-import { styles } from '../res';
+import { TextField } from 'react-native-material-textfield';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button } from '../components/common';
 
@@ -39,105 +38,122 @@ export default class SearchExistingPatient extends Component {
         return (
             <ScrollView style={container}>
                 <View style={{ marginBottom: 10 }}>
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Surname'}
-                        onChangeTextValue={(surname) => this.setState({ surname })}
+                    <TextField
+                        label='Surname'
+                        value={this.state.surname}
+                        onChangeText={(surname) => this.setState({ surname })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         onSubmitEditing={() => { this.refs.firstName.focus(); }}
+                        returnKeyType='next'
                     />
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'First Name'}
+
+                    <TextField
                         ref='firstName'
-                        onChangeTextValue={(firstName) => this.setState({ firstName })}
+                        label='First Name'
+                        value={this.state.firstName}
+                        onChangeText={(firstName) => this.setState({ firstName })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         onSubmitEditing={() => { this.refs.licenseNo.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'License Number(#)'}
+                    <TextField
                         ref='licenseNo'
-                        onChangeTextValue={(licenseNo) => this.setState({ licenseNo })}
+                        label='License Number(#)'
+                        value={this.state.licenseNo}
+                        onChangeText={(licenseNo) => this.setState({ licenseNo })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        keyboardType='numeric'                        
                         onSubmitEditing={() => { this.refs.emailAddress.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Email'}
+                    <TextField
                         ref='emailAddress'
-                        required={true}
-                        onChangeTextValue={(emailAddress) => this.setState({ emailAddress })}
-                        keyboardType='email-address'
-                        errorMessage="Email is invalid"
-                        emptyMessage="Email is required"
+                        label='Email'
+                        value={this.state.emailAddress}
+                        onChangeText={(emailAddress) => this.setState({ emailAddress })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        keyboardType='email-address'                        
                         onSubmitEditing={() => { this.refs.phone.focus(); }}
+                        returnKeyType='next'
                     />
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Phone(#)'}
+
+                    <TextField
                         ref='phone'
-                        onChangeTextValue={(contactNo) => this.setState({ contactNo })}
+                        label='Phone(#)'
+                        value={this.state.contactNo}
+                        onChangeText={(contactNo) => this.setState({ contactNo })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         keyboardType='numeric'
+                        returnKeyType='done'
                     />
 
                     <View style={viewContainer} >
-                        <Text style={textStyle}>
+{/*                         <Text style={textStyle}>
                             ThumbPrint
-                        </Text>
+                        </Text> */}
                         <Button btnStyle={buttonContainer} txtStyle={textContainer} >
-                            Select
+                            ThumbPrint
                         </Button>
                     </View>
 
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                        }}
-                    />
-
                     <View style={viewContainer} >
-                        <Text style={textStyle}>
+{/*                         <Text style={textStyle}>
                             Iris Scan
-                        </Text>
+                        </Text> */}
                         <Button btnStyle={buttonContainer} txtStyle={textContainer} >
-                            Select
+                            Iris Scan
                         </Button>
                     </View>
-
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                        }}
-                    />
 
                     <View style={viewContainer} >
-                        <Text style={textStyle}>
+                        {/*  <Text style={textStyle}>
                             Face Recognition
-                        </Text>
-                        <Button btnStyle={buttonContainer} txtStyle={textContainer} >
-                            Select
+                        </Text > */}
+                        <Button btnStyle={[buttonContainer, {width:'60%'}]} txtStyle={textContainer} >
+                            Face Recognition
                         </Button>
                     </View>
 
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                        }}
-                    />
-
-                    <Button 
+                    <Button
                         btnStyle={{
-                            marginTop: 30, 
-                            marginBottom: 10, 
-                            paddingLeft: 20, 
-                            paddingRight: 20 
+                            marginTop: 20,
+                            marginBottom: 20,
                         }}
                         onPress={() => navigate('SearchResults')}
                     >
-                        Search
+                        SEARCH
             </Button>
                 </View>
             </ScrollView>
@@ -148,7 +164,7 @@ export default class SearchExistingPatient extends Component {
 const stylesSheet = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 10,
+        paddingTop: 5,
         paddingBottom: 10,
         paddingLeft: 20,
         paddingRight: 20,
@@ -167,13 +183,14 @@ const stylesSheet = StyleSheet.create({
         marginBottom: 10,
     },
     buttonContainer: {
+        marginLeft: 0,
         marginTop: 8,
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 5,
         paddingBottom: 5,
         borderRadius: ColorSchema.BORDER_RADIUS,
-        width: '30%'
+        width: '40%'
     },
     textContainer: {
         fontSize: 16,

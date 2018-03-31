@@ -53,9 +53,10 @@ const RouteConfigs = StackNavigator({
     navigationOptions: { title: 'CountrySelection', headerLeft: null }
   },
   ExistingPatient: { screen: ExistingPatient, navigationOptions: { title: 'Patient Detail' } },
-  ExistingPatientDetail: { 
-    screen: ExistingPatientDetail, 
-    navigationOptions: { title: 'Existing Patient' } },
+  ExistingPatientDetail: {
+    screen: ExistingPatientDetail,
+    navigationOptions: { title: 'Existing Patient' }
+  },
   PatientType: {
     screen: PatientType,
     navigationOptions: {

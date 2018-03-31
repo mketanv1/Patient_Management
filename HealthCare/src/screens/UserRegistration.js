@@ -4,15 +4,15 @@ import {
     View,
     Text,
     ScrollView,
-    Picker,
-    Keyboard
+    Keyboard,
 } from 'react-native';
-import FloatLabelTextField from 'react-native-floating-label-text-input';
-import { ListItem, CheckBox, Icon, Right } from 'native-base';
+import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
+import { TextField } from 'react-native-material-textfield';
+import { ListItem, CheckBox, Picker } from 'native-base';
 import ManageDB from '../Database/ManageDB';
 import { styles } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
-import { Button, RadioOptions } from '../components/common';
+import { Button } from '../components/common';
 
 const manageDB = new ManageDB();
 
@@ -27,75 +27,43 @@ export default class UserRegistration extends Component {
             phoneNumber: '',
             employer: '',
             firstYearOfRegistration: '',
-            gender:
-                [
-                    {
-                        label: 'Male',
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        size: 20,
-                        selected: true,
-                    },
-                    {
-                        label: 'Female',
-                        size: 20,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                ],
-            selectedGender: '',
-            category:
-                [
-                    {
-                        label: 'Health Worker',
-                        size: 20,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: true,
-                    },
-                    {
-                        label: 'Allied Health',
-                        size: 20,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                    {
-                        label: 'Nurse',
-                        size: 20,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                    {
-                        label: 'Doctor',
-                        size: 20,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                ],
-            selectedCategory: '',
+            gender: '',
+            category: '',
             role: '',
             password: '',
             checkedPolicy: false,
             firstNameError: '',
             lastNameError: '',
             emailError: '',
-            roleError: ''
-
+            roleError: '',
         };
+        this.onSelect = this.onSelect.bind(this);
+        this.onSelectedCategory = this.onSelectedCategory.bind(this);
     }
 
     componentDidMount() {
-        this.state.gender.map((item) => {
-            if (item.selected === true) {
-                this.setState({ selectedGender: item.label });
-            }
-        });
+        this.setState({ gender: 'Male' });
+        this.setState({ category: 'Health Worker' });
+    }
 
-        this.state.category.map((item) => {
-            if (item.selected === true) {
-                this.setState({ selectedCategory: item.label });
-            }
+    /**
+     * Calling  RadioButton
+     */
+    onSelect(index, value) {
+        this.setState({
+            gender: `${value}`
         });
     }
 
+    onSelectedCategory(index, value) {
+        this.setState({
+            category: `${value}`
+        });
+    }
+
+    /**
+     * submit registration from onClick
+     */
     onSubmit = (navigator) => {
         if (this.state.firstName === '') {
             this.refs.firstName.focus();
@@ -130,7 +98,7 @@ export default class UserRegistration extends Component {
             this.setState(() => ({ roleError: 'Select any one role.' }));
         } else {
             this.setState(() => ({ roleError: null }));
-        } 
+        }
 
         manageDB.AddUser(
             this.state.firstName,
@@ -139,8 +107,8 @@ export default class UserRegistration extends Component {
             this.state.phoneNumber,
             this.state.employer,
             this.state.firstYearOfRegistration,
-            this.state.selectedGender,
-            this.state.selectedCategory,
+            this.state.gender,
+            this.state.category,
             this.state.role,
             this.state.password,
         );
@@ -150,7 +118,7 @@ export default class UserRegistration extends Component {
     }
 
     getRoles() {
-        const selectedCategory = this.state.selectedCategory;
+        const selectedCategory = this.state.category;
         if (selectedCategory === 'Health Worker') {
             return ['Select', 'Student', 'Untrained Volunteer', 'Community Health Worker'];
         } else if (selectedCategory === 'Allied Health') {
@@ -169,30 +137,6 @@ export default class UserRegistration extends Component {
 
     myFocusFunction = () => {
         this.refs.scrollView.scrollTo({ y: 0 });
-    }
-
-    ChangeGender(index) {
-        this.state.gender.map((item) => {
-            item.selected = false;
-        });
-
-        this.state.gender[index].selected = true;
-
-        this.setState({ gender: this.state.gender }, () => {
-            this.setState({ selectedGender: this.state.gender[index].label });
-        });
-    }
-
-    changeCategory(index) {
-        this.state.category.map((item) => {
-            item.selected = false;
-        });
-
-        this.state.category[index].selected = true;
-
-        this.setState({ category: this.state.category }, () => {
-            this.setState({ selectedCategory: this.state.category[index].label });
-        });
     }
 
     validateCommon = (value) => {
@@ -216,16 +160,28 @@ export default class UserRegistration extends Component {
         const options = this.getRoles();
 
         return (
-            <ScrollView keyboardShouldPersistTaps="always" ref='scrollView'>
-                <View style={styles.container}>
+            <ScrollView
+                overScrollMode='always'
+                // keyboardShouldPersistTaps="handled"
+                ref='scrollView'
+            >
+                <View style={[styles.container, { paddingBottom: 0 }]}>
 
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'First Name'}
-                        onChangeTextValue={(firstName) => this.setState({ firstName })}
-                        onFocus={this.myFocusFunction}
+                    <TextField
                         ref={'firstName'}
+                        label='First Name'
+                        value={this.state.firstName}
+                        onChangeText={(firstName) => this.setState({ firstName })}
+                        onFocus={this.myFocusFunction}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         onSubmitEditing={() => { this.refs.lastName.focus(); }}
+                        returnKeyType='next'
                     />
                     {!!this.state.firstNameError && (
                         <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
@@ -233,13 +189,21 @@ export default class UserRegistration extends Component {
                         </Text>
                     )}
 
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Last Name'}
-                        onChangeTextValue={(lastName) => this.setState({ lastName })}
-                        onFocus={this.myFocusFunction}
+                    <TextField
                         ref={'lastName'}
+                        label='Last Name'
+                        value={this.state.lastName}
+                        onChangeText={(lastName) => this.setState({ lastName })}
+                        onFocus={this.myFocusFunction}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         onSubmitEditing={() => { this.refs.email.focus(); }}
+                        returnKeyType='next'
                     />
                     {!!this.state.lastNameError && (
                         <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
@@ -247,152 +211,193 @@ export default class UserRegistration extends Component {
                         </Text>
                     )}
 
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Email Address'}
-                        onChangeTextValue={(email) => this.setState({ email })}
-                        onFocus={this.myFocusFunction}
-                        keyboardType='email-address'
+                    <TextField
                         ref={'email'}
+                        label='Email Address'
+                        value={this.state.email}
+                        onChangeText={(email) => this.setState({ email })}
+                        onFocus={this.myFocusFunction}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        keyboardType='email-address'
                         onSubmitEditing={() => { this.refs.password.focus(); }}
+                        returnKeyType='next'
                     />
                     {!!this.state.emailError && (
                         <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
                             {this.state.emailError}
                         </Text>
                     )}
-
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Password'}
-                        onChangeTextValue={(password) => this.setState({ password })}
-                        secureTextEntry={true}
-                        onFocus={this.myFocusFunction}
+                    <TextField
                         ref={'password'}
-                        onSubmitEditing={() => { this.refs.confirmPassword.focus(); }}
-                    />
-
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Confirm Password'}
+                        label='Password'
+                        value={this.state.password}
+                        onChangeText={(password) => this.setState({ password })}
+                        onFocus={this.myFocusFunction}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         secureTextEntry={true}
-                        onFocus={this.myFocusFunction}
+                        onSubmitEditing={() => { this.refs.confirmPassword.focus(); }}
+                        returnKeyType='next'
+                    />
+
+                    <TextField
                         ref={'confirmPassword'}
+                        label='Confirm Password'
+                        onFocus={this.myFocusFunction}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        secureTextEntry={true}
                         onSubmitEditing={() => { this.refs.phoneNumber.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Phone Number'}
-                        onChangeTextValue={(phoneNumber) => this.setState({ phoneNumber })}
-                        onFocus={this.myFocusFunction}
-                        keyboardType='numeric'
+                    <TextField
                         ref={'phoneNumber'}
-                        onSubmitEditing={() => { this.refs.employer.focus(); }}
-                    />
-
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Employer'}
-                        onChangeTextValue={(employer) => this.setState({ employer })}
+                        label='Phone Number'
+                        value={this.state.phoneNumber}
+                        onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
                         onFocus={this.myFocusFunction}
-                        ref={'employer'}
-                        onSubmitEditing={() => { this.refs.registrationYear.focus(); }}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        keyboardType='numeric'
+                        onSubmitEditing={() => { this.refs.employer.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'First Year of Registration'}
-                        onChangeTextValue={
+                    <TextField
+                        ref={'employer'}
+                        label='Employer'
+                        value={this.state.employer}
+                        onChangeText={(employer) => this.setState({ employer })}
+                        onFocus={this.myFocusFunction}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        onSubmitEditing={() => { this.refs.registrationYear.focus(); }}
+                        returnKeyType='next'
+                    />
+
+                    <TextField
+                        ref={'registrationYear'}
+                        label='First Year of Registration'
+                        value={this.state.firstYearOfRegistration}
+                        onChangeText={
                             (firstYearOfRegistration) => this.setState({
                                 firstYearOfRegistration
                             })
                         }
                         onFocus={this.myFocusFunction}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        maxLength={4}
                         keyboardType='numeric'
-                        ref={'registrationYear'}
+                        returnKeyType='next'
                     />
 
-                    <View style={{ flexDirection: 'column' }}>
+                    <View style={{ flexDirection: 'row' }}>
                         <Text style={[styles.radioHeader]}>Gender :</Text>
-                        {
-                            this.state.gender.map((item, key) =>
-                                (
-                                    <RadioOptions
-                                        key={key} button={item}
-                                        onClick={this.ChangeGender.bind(this, key)}
-                                    />
-                                ))
-                        }
-                    </View>
+                        <RadioGroup
+                            style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 5 }}
+                            thickness={2}
+                            color={ColorSchema.THEME_COLOR_ONE}
+                            selectedIndex={0}
+                            onSelect={(index, value) => this.onSelect(index, value)}
+                        >
+                            <RadioButton value={'Male'} >
+                                <Text style={styles.radioButtonStyle}>Male</Text>
+                            </RadioButton>
 
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                            marginTop: 10,
-                        }}
-                    />
+                            <RadioButton value={'Female'}>
+                                <Text style={styles.radioButtonStyle}>Female</Text>
+                            </RadioButton>
+
+                        </RadioGroup>
+                    </View>
 
                     <View style={{ flexDirection: 'column' }}>
                         <Text style={[styles.radioHeader]}>Category :</Text>
-                        {
-                            this.state.category.map((item, key) =>
-                                (
-                                    <RadioOptions
-                                        key={key} button={item}
-                                        onClick={this.changeCategory.bind(this, key)}
-                                    />
-                                ))
-                        }
-                    </View>
+                        <RadioGroup
+                            thickness={2}
+                            color={ColorSchema.THEME_COLOR_ONE}
+                            selectedIndex={0}
+                            onSelect={(index, value) => this.onSelectedCategory(index, value)}
+                        >
+                            <RadioButton value={'Health Worker'} >
+                                <Text style={styles.radioButtonStyle}>Health Worker</Text>
+                            </RadioButton>
 
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                            marginTop: 10,
-                        }}
-                    />
+                            <RadioButton value={'Allied Health'}>
+                                <Text style={styles.radioButtonStyle}>Allied Health</Text>
+                            </RadioButton>
 
-                    <View style={{ flexDirection: 'column' }}>
-                        <Text style={[styles.radioHeader]}>Select your Role :</Text>
-                        <View style={{ flexDirection: 'row', flex: 1 }}>
-                            <Picker
-                                style={[styles.pickerText]}
-                                selectedValue={this.state.role}
-                                onValueChange={
-                                    (itemValue) => this.setState({ role: itemValue })
-                                }
-                            >
-                                {options.map((item, index) => {
-                                    return (<Picker.Item label={item} value={index} key={index} />);
-                                })}
-                            </Picker>
-                            <Right>
-                                <Icon
-                                    name="ios-arrow-down"
-                                    style={{
-                                        alignItems: 'flex-end',
-                                        color: ColorSchema.THEME_COLOR_ONE
-                                    }}
-                                />
-                            </Right>
-                        </View>
+                            <RadioButton value={'Nurse'}>
+                                <Text style={styles.radioButtonStyle}>Nurse</Text>
+                            </RadioButton>
+
+                            <RadioButton value={'Doctor'}>
+                                <Text style={styles.radioButtonStyle}>Doctor</Text>
+                            </RadioButton>
+                        </RadioGroup>
                     </View>
                     <View
                         style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                            marginTop: 10,
+                            marginTop: 5,
+                            borderWidth: 1,
+                            borderColor: ColorSchema.INPUT_TEXT_ANIM_COLOR
                         }}
-                    />
+                    >
+                        <Picker
+                            style={styles.pickerText}
+                            mode="dropdown"
+                            placeholder="Select One"
+                            selectedValue={this.state.role}
+                            onValueChange={
+                                (itemValue) => this.setState({ role: itemValue })
+                            }
+                        >
+                            {options.map((item, index) => {
+                                return (<Picker.Item label={item} value={index} key={index} />);
+                            })}
+                        </Picker>
+                    </View>
+
                     {!!this.state.roleError && (
                         <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
                             {this.state.roleError}
                         </Text>
                     )}
-
+                </View>
+                <View style={[styles.container, { padding: 0 }]}>
                     <ListItem style={{ borderBottomWidth: 0 }}>
                         <CheckBox
                             checked={this.state.checkedPolicy}
@@ -408,10 +413,10 @@ export default class UserRegistration extends Component {
                     </ListItem>
 
                     <Button
-                        btnStyle={buttonContainer} title="Create Account"
+                        btnStyle={[buttonContainer, { width: '60%' }]} title="Create Account"
                         onPress={() => this.onSubmit(this.props.navigation)}
                     >
-                        Create account
+                        CREATE ACCOUNT
                     </Button>
                 </View>
             </ScrollView>

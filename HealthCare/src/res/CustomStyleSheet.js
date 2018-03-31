@@ -24,15 +24,15 @@ const styles = StyleSheet.create({
         borderRadius: ColorSchema.BORDER_RADIUS,
         borderColor: ColorSchema.THEME_COLOR_ONE,
     },
-    text: {
+    textStyle: {
         textAlign: 'center',
         padding: ColorSchema.DEFAULT_PADDING,
-        fontSize: 22,
+        fontSize: ColorSchema.THEME_FONT_SIZE_THREE,
         color: ColorSchema.THEME_COLOR_ONE,
     },
     PageHeaderTextStyle: {
         padding: 10,
-        fontSize: 28,
+        fontSize: 25,
         textAlign: 'center',
         fontWeight: 'bold',
         color: ColorSchema.THEME_COLOR_ONE,
@@ -44,13 +44,9 @@ const styles = StyleSheet.create({
         color: ColorSchema.THEME_COLOR_ONE
     },
     pickerText: {
-        width: '90%',
-        paddingLeft: 5,
-        backgroundColor: ColorSchema.TRANSPARENT_COLOR,
         color: ColorSchema.THEME_COLOR_ONE,
     },
     radioHeader: {
-        paddingLeft: 5,
         paddingTop: 10,
         marginBottom: 5,
         fontSize: ColorSchema.THEME_FONT_SIZE_ONE,
@@ -59,6 +55,10 @@ const styles = StyleSheet.create({
     textSize: {
         fontSize: ColorSchema.THEME_FONT_SIZE_ONE,
     },
+    radioButtonStyle: {
+        color: ColorSchema.THEME_COLOR_ONE,
+        fontSize: ColorSchema.THEME_FONT_SIZE_ONE,
+    }
 });
 
 export { styles };

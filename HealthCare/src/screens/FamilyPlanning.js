@@ -5,10 +5,11 @@ import {
     View,
     Text,
     TextInput,
-    Picker,
 } from 'react-native';
-import FloatLabelTextField from 'react-native-floating-label-text-input';
-import { styles } from '../res';
+import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
+import { TextField } from 'react-native-material-textfield';
+import { Picker } from 'native-base';
+import { styles, commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button, RadioOptions } from '../components/common';
 import { toTitleCase } from '../Utils';
@@ -30,43 +31,22 @@ export default class FamilyPlanning extends Component {
             numOfPregnancies: '',
             numOfLiveBirths: '',
             contraceptionMethod: '',
-            doneSTIScreen:
-                [
-                    {
-                        label: 'Yes',
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        size: 20,
-                        selected: true,
-                    },
-                    {
-                        label: 'No',
-                        size: 20,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                ],
-            selectedSTIScreen: '',
+            doneSTIScreen: '',
             additionalNotes: '',
         };
+        this.onSelectedSTIScreen = this.onSelectedSTIScreen.bind(this);
     }
 
     componentDidMount() {
-        this.state.doneSTIScreen.map((item) => {
-            if (item.selected === true) {
-                this.setState({ selectedSTIScreen: item.label });
-            }
-        });
+        this.setState({ doneSTIScreen: 'Yes' });
     }
 
-    screenSTIDone(index) {
-        this.state.doneSTIScreen.map((item) => {
-            item.selected = false;
-        });
-
-        this.state.doneSTIScreen[index].selected = true;
-
-        this.setState({ doneSTIScreen: this.state.doneSTIScreen }, () => {
-            this.setState({ selectedSTIScreen: this.state.doneSTIScreen[index].label });
+    /**
+     * Calling  RadioButton
+     */
+    onSelectedSTIScreen(index, value) {
+        this.setState({
+            gender: `${value}`
         });
     }
 
@@ -88,31 +68,44 @@ export default class FamilyPlanning extends Component {
 
         return (
             <ScrollView style={{ backgroundColor: ColorSchema.THEME_COLOR_TWO }}>
-                <View style={[styles.container, { justifyContent: 'flex-start' }]}>
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Number Of Pregnancies'}
-                        onChangeTextValue={
-                            (numOfPregnancies) => this.setState({ numOfPregnancies })
-                        }
+                <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 5 }]}>
+                    <TextField
+                        label='Number Of Pregnancies'
+                        value={this.state.numOfPregnancies}
+                        onChangeText={(numOfPregnancies) => this.setState({ numOfPregnancies })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         keyboardType="numeric"
+                        returnKeyType='next'
                     />
-                    <FloatLabelTextField
-                        style={styles.floatingTextStyle}
-                        placeholder={'Number Of Live Births'}
-                        onChangeTextValue={
-                            (numOfLiveBirths) => this.setState({ numOfLiveBirths })
-                        }
+
+                    <TextField
+                        label='Number Of Live Births'
+                        value={this.state.numOfLiveBirths}
+                        onChangeText={(numOfLiveBirths) => this.setState({ numOfLiveBirths })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         keyboardType="numeric"
+                        returnKeyType='next'
                     />
 
                     <View style={picker}>
                         <Text style={textStyle}>Select Contraception Method</Text>
                         <Picker
+                            style={styles.pickerText}
                             mode="dropdown"
                             placeholder='Select'
                             selectedValue={this.state.contraceptionMethod}
-                            style={styles.pickerText}
                             onValueChange={
                                 (itemValue) => this.setState({ contraceptionMethod: itemValue })
                             }
@@ -130,20 +123,28 @@ export default class FamilyPlanning extends Component {
                         <Text style={[styles.radioHeader, { paddingLeft: 0 }]}>
                             STI Screening Done :
                         </Text>
-                        {
-                            this.state.doneSTIScreen.map((item, key) =>
-                                (
-                                    <RadioOptions
-                                        key={key}
-                                        button={item}
-                                        onClick={this.screenSTIDone.bind(this, key)}
-                                    />
-                                ))
-                        }
+                        <RadioGroup
+                            style={{ flexDirection: 'row', alignSelf: 'center' }}
+                            thickness={2}
+                            color={ColorSchema.THEME_COLOR_ONE}
+                            selectedIndex={0}
+                            onSelect={(index, value) => this.onSelectedSTIScreen(index, value)}
+                        >
+                            <RadioButton value={'Yes'} >
+                                <Text style={styles.radioButtonStyle}>Yes</Text>
+                            </RadioButton>
+
+                            <RadioButton value={'No'}>
+                                <Text style={styles.radioButtonStyle}>No</Text>
+                            </RadioButton>
+
+                        </RadioGroup>
                     </View>
                     <Text style={textStyle}>Medication Given</Text>
                     <Text style={textStyle}>Additional Notes</Text>
                     <TextInput
+                        placeholder={'Add description...'}
+                        placeholderTextColor={ColorSchema.INPUT_TEXT_ANIM_COLOR}
                         underlineColorAndroid={ColorSchema.TRANSPARENT_COLOR}
                         style={textInputContainer}
                         value={this.state.additionalNotes}
@@ -156,12 +157,10 @@ export default class FamilyPlanning extends Component {
                         btnStyle={{
                             marginTop: 30,
                             marginBottom: 10,
-                            paddingLeft: 30,
-                            paddingRight: 30
                         }}
                         onPress={() => console.log('Submited')}
                     >
-                        Submit
+                        {commonStrings.txtSubmit}
                     </Button>
                 </View>
             </ScrollView>
@@ -186,7 +185,7 @@ const stylesSheet = StyleSheet.create({
     },
     picker: {
         flexDirection: 'column',
-        borderBottomWidth: 1,
+        borderBottomWidth: 0.4,
         borderColor: '#C8C7CC',
         marginBottom: 10
     },

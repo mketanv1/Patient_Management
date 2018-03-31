@@ -5,17 +5,25 @@ import {
     View,
     ScrollView,
     TouchableOpacity,
-    Picker,
     Image,
 } from 'react-native';
-import FloatLabelTextInput from 'react-native-floating-label-text-input';
+import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
+import { TextField } from 'react-native-material-textfield';
 import { DatePickerDialog } from 'react-native-datepicker-dialog';
 import ImagePicker from 'react-native-image-picker';
 import moment from 'moment';
-import { Icon, Right } from 'native-base';
+import { Picker } from 'native-base';
 import { commonStrings, styles } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
-import { Button, RadioOptions } from '../components/common';
+import { Button } from '../components/common';
+
+const provinceOptions = [
+    'Select Province',
+    'Alberta',
+    'British Columbia',
+    'Manitoba',
+    'Nunavut',
+];
 
 export default class NewPatient extends Component {
 
@@ -30,38 +38,8 @@ export default class NewPatient extends Component {
             address: '',
             dateText: '',
             dateHolder: null,
-            gender:
-                [
-                    {
-                        label: 'Female',
-                        size: 16,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                    {
-                        label: 'Male',
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        size: 16,
-                        selected: false,
-                    },
-                ],
-            selectedItem: '',
-            maritalStatus:
-                [
-                    {
-                        label: 'Single',
-                        size: 16,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                    {
-                        label: 'Married',
-                        size: 16,
-                        color: ColorSchema.THEME_COLOR_ONE,
-                        selected: false,
-                    },
-                ],
-            selectedStatus: '',
+            gender: '',
+            maritalStatus: '',
             emailAddress: '',
             contactNo: '',
             imageSource: null,
@@ -70,48 +48,27 @@ export default class NewPatient extends Component {
             notes: '',
             validate: false,
         };
+        this.onSelectedGender = this.onSelectedGender.bind(this);
+        this.onSelectedMaritalStatus = this.onSelectedMaritalStatus.bind(this);
     }
 
-    /**
-     * Calling Custom RadioButton
-     */
     componentDidMount() {
-        this.state.gender.map((item) => {
-            if (item.selected === true) {
-                this.setState({ selectedItem: item.label });
-            }
-        });
-        this.state.maritalStatus.map((item) => {
-            if (item.selected === true) {
-                this.setState({ selectedStatus: item.label });
-            }
-        });
+        this.setState({ gender: 'Male' });
+        this.setState({ maritalStatus: 'Single' });
     }
-
+    
     /**
-     * Call DatePicker Methods
+     * Calling  RadioButton
      */
-
-    onDatePickedFunction = (date) => {
+    onSelectedGender(index, value) {
         this.setState({
-            dobDate: date,
-            dateText: moment(date).format('DD-MMM-YYYY')
+            gender: `${value}`
         });
     }
 
-    DatePickerMainFunctionCall = () => {
-        DateHolder = this.state.dateHolder;
-
-        if (!DateHolder || DateHolder == null) {
-            DateHolder = new Date();
-            this.setState({
-                DateHolder: DateHolder
-            });
-        }
-
-        //To open the dialog
-        this.refs.DatePickerDialog.open({
-            date: DateHolder,
+    onSelectedMaritalStatus(index, value) {
+        this.setState({
+            maritalStatus: `${value}`
         });
     }
 
@@ -146,27 +103,41 @@ export default class NewPatient extends Component {
         });
     }
 
-    changeActiveRadioButton(index) {
-        this.state.gender.map((item) => {
-            item.selected = false;
-        });
+    /**
+     * Call DatePicker Methods
+     */
 
-        this.state.gender[index].selected = true;
-
-        this.setState({ gender: this.state.gender }, () => {
-            this.setState({ selectedItem: this.state.gender[index].label });
+    onDatePickedFunction = (date) => {
+        this.setState({
+            dobDate: date,
+            dateText: moment(date).format('DD-MMM-YYYY')
         });
     }
 
-    changeActiveMaritalStatus(index) {
-        this.state.maritalStatus.map((item) => {
-            item.selected = false;
-        });
+    getCity() {
+        const selectedProvince = this.state.provinceValueHolder;
+        if (selectedProvince === 1) {
+            return ['Select City', 'Bentley', 'Canmore'];
+        } else if (selectedProvince === 2) {
+            return ['Select City', 'Surrey', 'Kamloops', 'Campbell'];
+        } else {
+            return ['Select City'];
+        }
+    }
+    
+    DatePickerMainFunctionCall = () => {
+        DateHolder = this.state.dateHolder;
 
-        this.state.maritalStatus[index].selected = true;
+        if (!DateHolder || DateHolder == null) {
+            DateHolder = new Date();
+            this.setState({
+                DateHolder: DateHolder
+            });
+        }
 
-        this.setState({ maritalStatus: this.state.maritalStatus }, () => {
-            this.setState({ selectedStatus: this.state.maritalStatus[index].label });
+        //To open the dialog
+        this.refs.DatePickerDialog.open({
+            date: DateHolder,
         });
     }
 
@@ -174,107 +145,122 @@ export default class NewPatient extends Component {
         const { navigate } = this.props.navigation;
         const {
             container,
-            picker,
-            pickerItemText,
             datePickerBox,
             datePickerText,
-            welcome,
+            textStyle,
             ImageContainer,
             txtStyle
         } = stylesSheet;
 
+        const cityOptions = this.getCity();
         return (
             <ScrollView style={container}>
                 <View style={{ marginBottom: 10 }}>
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'First Name'}
-                        onChangeTextValue={
-                            (firstName) => this.setState({ firstName })
-                        }
+                    <TextField
+                        ref={'firstName'}
+                        label='First Name'
+                        value={this.state.firstName}
+                        onChangeText={(firstName) => this.setState({ firstName })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         onSubmitEditing={() => { this.refs.middleName.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Middle Name'}
-                        ref='middleName'
-                        onChangeTextValue={
-                            (middleName) => this.setState({ middleName })
-                        }
+                    <TextField
+                        ref={'middleName'}
+                        label='Middle Name'
+                        value={this.state.middleName}
+                        onChangeText={(middleName) => this.setState({ middleName })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         onSubmitEditing={() => { this.refs.lastName.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Last Name'}
-                        ref='lastName'
-                        onChangeTextValue={
-                            (lastName) => this.setState({ lastName })
-                        }
+                    <TextField
+                        ref={'lastName'}
+                        label='Last Name'
+                        value={this.state.lastName}
+                        onChangeText={(lastName) => this.setState({ lastName })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        returnKeyType='next'
                     />
-
-                    <View style={picker}>
-                        <Picker
-                            mode="dropdown"
-                            placeholder='Select locality'
-                            selectedValue={this.state.provinceValueHolder}
-                            onValueChange={
-                                (itemValue) => this.setState({ provinceValueHolder: itemValue })
-                            }
-                            style={pickerItemText}
-                        >
-                            {/* List of province displayed from api. Currently it is dumy list */}
-
-                            <Picker.Item label="Province" value="Province" />
-                            <Picker.Item label="Alberta" value="Alberta" />
-                            <Picker.Item label="British Columbia" value="British Columbia" />
-                            <Picker.Item label="Manitoba" value="Manitoba" />
-                            <Picker.Item label="Nunavut" value="Nunavut" />
-                        </Picker>
-                        <Right>
-                            <Icon
-                                name="ios-arrow-down"
-                                style={{ color: ColorSchema.THEME_COLOR_ONE }}
-                            />
-                        </Right>
-                    </View>
-
-                    <View style={picker}>
-                        <Picker
-                            mode="dropdown"
-                            placeholder='Select City'
-                            selectedValue={this.state.cityValueHolder}
-                            onValueChange={
-                                (itemValue) => this.setState({ cityValueHolder: itemValue })
-                            }
-                            style={pickerItemText}
-                        >
-                            {/* List of city displayed from api. Currently it is dumy list */}
-
-                            <Picker.Item label="City" value="City" />
-                            <Picker.Item label="Bentley" value="Bentley" />
-                            <Picker.Item label="Canmore" value="Canmore" />                            
-                        </Picker>
-                        <Right>
-                            <Icon
-                                name="ios-arrow-down"
-                                style={{ color: ColorSchema.THEME_COLOR_ONE }}
-                            />
-                        </Right>
-                    </View>
-
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Address'}
-                        onChangeTextValue={
-                            (address) => this.setState({ address })
+                    <Picker
+                        style={styles.pickerText}
+                        mode="dropdown"
+                        placeholder="Select locality"
+                        selectedValue={this.state.provinceValueHolder}
+                        onValueChange={
+                            (itemValue) => this.setState({ provinceValueHolder: itemValue })
                         }
+                    >
+                        {provinceOptions.map((item, index) => {
+                            return (<Picker.Item label={item} value={index} key={index} />);
+                        })}
+                    </Picker>
+                    <View
+                        style={{
+                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
+                            borderBottomWidth: 0.4,
+                            marginBottom: 5,
+                        }}
+                    />
+                    <Picker
+                        style={styles.pickerText}
+                        mode="dropdown"
+                        placeholder="Select City"
+                        selectedValue={this.state.cityValueHolder}
+                        onValueChange={
+                            (itemValue) => this.setState({ cityValueHolder: itemValue })
+                        }
+                    >
+                        {cityOptions.map((item, index) => {
+                            return (<Picker.Item label={item} value={index} key={index} />);
+                        })}
+                    </Picker>
+                    <View
+                        style={{
+                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
+                            borderBottomWidth: 0.4,
+                            marginBottom: 5,
+                        }}
+                    />
+                    <TextField
+                        label='Address'
+                        value={this.state.address}
+                        onChangeText={(address) => this.setState({ address })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        returnKeyType='next'
                     />
 
                     <TouchableOpacity onPress={this.DatePickerMainFunctionCall.bind(this)} >
                         <View style={datePickerBox}>
-                            <Text style={datePickerText} >{this.state.dateText}</Text>
+                            <Text style={datePickerText} >{
+                                !this.state.dateText ? ('Select Date Of Birth') : this.state.dateText
+                            }</Text>
                         </View>
                     </TouchableOpacity>
 
@@ -284,77 +270,82 @@ export default class NewPatient extends Component {
                     />
 
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={[welcome, { paddingRight: 50, marginBottom: 10 }]}>
+                        <Text style={[textStyle, { paddingRight: 50 }]}>
                             Gender :
                         </Text>
-                        {
-                            this.state.gender.map((item, key) =>
-                                (
-                                    <RadioOptions
-                                        key={key}
-                                        button={item}
-                                        onClick={this.changeActiveRadioButton.bind(this, key)}
-                                    />
-                                ))
-                        }
-                    </View>
+                        <RadioGroup
+                            style={{ flexDirection: 'row', alignSelf: 'center' }}
+                            thickness={2}
+                            color={ColorSchema.THEME_COLOR_ONE}
+                            selectedIndex={0}
+                            onSelect={(index, value) => this.onSelectedGender(index, value)}
+                        >
+                            <RadioButton value={'Male'} >
+                                <Text style={styles.radioButtonStyle}>Male</Text>
+                            </RadioButton>
 
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                            marginTop: 10,
-                        }}
-                    />
+                            <RadioButton value={'Female'}>
+                                <Text style={styles.radioButtonStyle}>Female</Text>
+                            </RadioButton>
+
+                        </RadioGroup>
+                    </View>
 
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={[welcome, { marginBottom: 10 }]}>Marital Status :</Text>
-                        {
-                            this.state.maritalStatus.map((item, key) =>
-                                (
-                                    <RadioOptions
-                                        key={key}
-                                        button={item}
-                                        onClick={this.changeActiveMaritalStatus.bind(this, key)}
-                                    />
-                                ))
-                        }
+                        <Text style={[textStyle, { marginTop: 0 }]}>Marital Status :</Text>
+                        <RadioGroup
+                            style={{ flexDirection: 'row', alignSelf: 'center' }}
+                            thickness={2}
+                            color={ColorSchema.THEME_COLOR_ONE}
+                            selectedIndex={0}
+                            onSelect={(index, value) => this.onSelectedMaritalStatus(index, value)}
+                        >
+                            <RadioButton value={'Single'} >
+                                <Text style={styles.radioButtonStyle}>Single</Text>
+                            </RadioButton>
+
+                            <RadioButton value={'Married'}>
+                                <Text style={styles.radioButtonStyle}>Married</Text>
+                            </RadioButton>
+
+                        </RadioGroup>
                     </View>
 
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                            marginTop: 10,
-                        }}
-                    />
-
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Email'}
-                        ref='emailAddress'
-                        required={true}
-                        validate={this.validateEmail}
-                        onChangeTextValue={
-                            (emailAddress) => this.setState({ emailAddress })
-                        }
+                    <TextField
+                        ref={'emailAddress'}
+                        label='Email'
+                        value={this.state.emailAddress}
+                        onChangeText={(emailAddress) => this.setState({ emailAddress })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         keyboardType='email-address'
-                        errorMessage="Email is invalid"
-                        emptyMessage="Email is required"
                         onSubmitEditing={() => { this.refs.contactNo.focus(); }}
+                        returnKeyType='next'
                     />
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Contact No'}
-                        ref='contactNo'
-                        onChangeTextValue={
-                            (contactNo) => this.setState({ contactNo })
-                        }
+
+                    <TextField
+                        ref={'contactNo'}
+                        label='Contact No'
+                        value={this.state.contactNo}
+                        onChangeText={(contactNo) => this.setState({ contactNo })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         keyboardType='numeric'
+                        returnKeyType='next'
                     />
 
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={[welcome, { marginBottom: 5 }]}>Image: </Text>
+                        <Text style={[textStyle, { marginTop: 0 }]}>Image: </Text>
                         <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
                             <View style={ImageContainer}>
                                 {
@@ -371,63 +362,70 @@ export default class NewPatient extends Component {
                         </TouchableOpacity>
                     </View>
 
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                            marginTop: 10,
-                        }}
-                    />
-
-                    <Text style={[welcome, { marginBottom: 10 }]}>
+                    <Text style={[textStyle, { marginBottom: 5 }]}>
                         ThumbPrint
                     </Text>
 
                     <View
                         style={{
                             borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.5,
-                            marginTop: 0,
+                            borderBottomWidth: 0.4,
+                            marginBottom: 5,
                         }}
                     />
 
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Licence No'}
-                        ref='licenceNo'
-                        onChangeTextValue={
-                            (licenceNo) => this.setState({ licenceNo })
-                        }
+                    <TextField
+                        ref={'licenceNo'}
+                        label='Licence No'
+                        value={this.state.licenceNo}
+                        onChangeText={(licenceNo) => this.setState({ licenceNo })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         keyboardType='numeric'
                         onSubmitEditing={() => { this.refs.bloodType.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Blood Type'}
-                        ref='bloodType'
-                        onChangeTextValue={
-                            (bloodType) => this.setState({ bloodType })
-                        }
+                    <TextField
+                        ref={'bloodType'}
+                        label='Blood Type'
+                        value={this.state.bloodType}
+                        onChangeText={(bloodType) => this.setState({ bloodType })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
                         onSubmitEditing={() => { this.refs.notes.focus(); }}
+                        returnKeyType='next'
                     />
 
-                    <FloatLabelTextInput
-                        style={styles.floatingTextStyle}
-                        placeholder={'Notes'}
-                        ref='notes'
-                        onChangeTextValue={
-                            (notes) => this.setState({ notes })
-                        }
-                        multiline={true}
+                    <TextField
+                        ref={'notes'}
+                        label='Notes'
+                        value={this.state.notes}
+                        onChangeText={(notes) => this.setState({ notes })}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        returnKeyType='done'
                     />
 
                     <Button
                         btnStyle={{
-                            marginTop: 30,
-                            marginBottom: 10,
-                            paddingLeft: 30,
-                            paddingRight: 30
+                            marginTop: 15,
+                            marginBottom: 20,
                         }}
                         onPress={() => navigate('PatientType')}
                     >
@@ -448,7 +446,7 @@ const stylesSheet = StyleSheet.create({
         paddingRight: 20,
         backgroundColor: ColorSchema.THEME_COLOR_TWO,
     },
-    welcome: {
+    textStyle: {
         padding: 15,
         paddingLeft: 0,
         marginTop: 5,
@@ -456,33 +454,30 @@ const stylesSheet = StyleSheet.create({
         color: ColorSchema.THEME_COLOR_FOUR,
     },
     picker: {
+        flex: 1,
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: '#C8C7CC',
-        marginBottom: 10
     },
     pickerItemText: {
         color: ColorSchema.THEME_COLOR_ONE,
         backgroundColor: 'transparent',
-        width: 250,
+        width: '95%',
         height: 60,
     },
     datePickerBox: {
-        borderColor: ColorSchema.THEME_COLOR_FOUR,
-        borderBottomWidth: 1,
-        padding: 0,
-        height: 60,
-        marginBottom: 10,
+        borderColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
+        borderBottomWidth: 0.4,
+        height: 45,
+        marginBottom: 5,
         justifyContent: 'center'
     },
     datePickerText: {
         fontSize: ColorSchema.THEME_FONT_SIZE_ONE,
-        marginLeft: 10,
-        borderWidth: 0,
         color: ColorSchema.THEME_COLOR_ONE,
     },
     ImageContainer: {
-        marginTop: 20,
+        marginTop: 10,
         borderColor: ColorSchema.THEME_COLOR_ONE,
         borderRadius: ColorSchema.BORDER_RADIUS,
         borderWidth: 1,

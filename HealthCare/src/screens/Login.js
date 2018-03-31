@@ -6,9 +6,9 @@ import {
     Text,
     Image,
     Alert,
-    AsyncStorage
+    AsyncStorage,
 } from 'react-native';
-import FloatLabelTextField from 'react-native-floating-label-text-input';
+import { TextField } from 'react-native-material-textfield';
 import { styles, commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button } from '../components/common';
@@ -62,7 +62,7 @@ export default class Login extends Component {
                 console.error(error);
             });
     }
-    
+
     loginFunction(navigator) {
         /*      //Login through API
                 (async()=>{
@@ -100,8 +100,6 @@ export default class Login extends Component {
             this.setState(() => ({ emailError: null }));
             this.setState(() => ({ passwordError: null }));
 
-            this.refs.email.clear();
-            this.refs.password.clear();
             Keyboard.dismiss();
             this.loginFunction(navigator);
         }
@@ -129,13 +127,19 @@ export default class Login extends Component {
                     health centers and hospitals around the world.
                 </Text>
 
-                <FloatLabelTextField
-                    placeholder={'E-mail ID'}
-                    style={styles.floatingTextStyle}
-                    onChangeTextValue={(email) => this.setState({ email })}
-                    keyboardType="email-address"
-                    ref={'email'}
+                <TextField
+                    label='Email'
+                    value={this.state.email}
+                    onChangeText={(email) => this.setState({ email })}
+                    keyboardType='email-address'
+                    enablesReturnKeyAutomatically={true}
+                    tintColor={ColorSchema.THEME_COLOR_ONE}
+                    baseColor={ColorSchema.THEME_COLOR_FOUR}
+                    textColor={ColorSchema.THEME_COLOR_ONE}
+                    labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                    fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
                     onSubmitEditing={() => { this.refs.password.focus(); }}
+                    returnKeyType='next'
                 />
                 {!!this.state.emailError && (
                     <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
@@ -143,14 +147,22 @@ export default class Login extends Component {
                     </Text>
                 )}
 
-
-                <FloatLabelTextField
-                    placeholder={'Password'}
-                    style={styles.floatingTextStyle}
-                    onChangeTextValue={(password) => this.setState({ password })}
-                    secureTextEntry={true}
+                <TextField
                     ref='password'
+                    label='Password'
+                    value={this.state.password}
+                    onChangeText={(password) => this.setState({ password })}
+                    secureTextEntry={true}
+                    clearTextOnFocus={true}
+                    enablesReturnKeyAutomatically={true}
+                    tintColor={ColorSchema.THEME_COLOR_ONE}
+                    baseColor={ColorSchema.THEME_COLOR_FOUR}
+                    textColor={ColorSchema.THEME_COLOR_ONE}
+                    fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                    labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                    labelHeight={15}
                     onSubmitEditing={Keyboard.dismiss}
+                    returnKeyType='done'
                 />
                 {!!this.state.passwordError && (
                     <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
@@ -178,6 +190,7 @@ export default class Login extends Component {
                 >
                     REGISTER NOW
                 </Button>
+
             </View>
         );
     }
@@ -204,5 +217,5 @@ const stylesSheet = StyleSheet.create({
         marginBottom: 10,
         alignSelf: 'center',
         justifyContent: 'center'
-    },
+    }
 });

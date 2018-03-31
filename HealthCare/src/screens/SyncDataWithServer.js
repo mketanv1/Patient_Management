@@ -32,7 +32,7 @@ export default class Sync extends Component {
     render() {        
         return (
             <View style={styles.container}>
-                <Text style={[styles.text, { padding: 5 }]}>Sync Complete...</Text>
+                <Text style={[styles.textStyle, { padding: 5 }]}>Sync Complete...</Text>
                 <ProgressBarAndroid
                     styleAttr="Horizontal"
                     progress={this.state.progress_value}
@@ -43,18 +43,18 @@ export default class Sync extends Component {
 
                 <View style={{ padding: ColorSchema.DEFAULT_PADDING }}>
                     <Text 
-                        style={[styles.text, stylesSheet.textStyle]
+                        style={[styles.textStyle, stylesSheet.textStyle]
                         }
                     >
                         Last Successful Sync
                     </Text>
-                    <Text style={[styles.text, stylesSheet.textStyle]}>
+                    <Text style={[styles.textStyle, stylesSheet.textStyle]}>
                         11:30, february 23, 2018
                     </Text>
                 </View>
 
                 <Button 
-                    btnStyle={{ marginTop: 10, paddingLeft: 20, paddingRight: 20 }} 
+                    btnStyle={{ marginTop: 10, paddingLeft: 20, paddingRight: 20 , width: '50%'}} 
                     onPress={this.startProgress}
                 >
                     Manual Sync

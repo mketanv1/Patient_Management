@@ -14,10 +14,10 @@ export default class HomeScreen extends Component {
 
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', BackHandler.exitApp);
-    }
+    } 
 
     componentWillUnmount() {
-        BackHandler.addEventListener('hardwareBackPress', BackHandler.exitApp);
+        BackHandler.removeEventListener('hardwareBackPress', BackHandler.exitApp);
     }
 
     render() {
@@ -38,7 +38,7 @@ export default class HomeScreen extends Component {
                             style={styles.opacityContainer} 
                             onPress={() => navigate('HomePatient')}
                         >
-                            <Text style={[styles.text, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                            <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                                 {commonStrings.txtPatient}
                             </Text>
                         </TouchableOpacity>
@@ -49,7 +49,7 @@ export default class HomeScreen extends Component {
                             style={styles.opacityContainer}
                             onPress={() => console.log('report')}
                         >
-                            <Text style={[styles.text, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                            <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                                 {commonStrings.txtReport}
                             </Text>
                         </TouchableOpacity>
@@ -60,7 +60,7 @@ export default class HomeScreen extends Component {
                             style={styles.opacityContainer} 
                             onPress={() => console.log('user profile')}
                         >
-                            <Text style={[styles.text, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                            <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                                 {commonStrings.txtUserProfile}
                             </Text>
                         </TouchableOpacity>

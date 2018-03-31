@@ -106,7 +106,8 @@ const stylesSheet = StyleSheet.create({
     alignSelf: 'flex-start'
   },
   textLink: {
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 10,
     textAlign: 'center',
     fontSize: ColorSchema.THEME_FONT_SIZE_ONE,
     color: ColorSchema.THEME_COLOR_ONE,

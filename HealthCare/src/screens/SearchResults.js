@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     ListView
 } from 'react-native';
-import { styles } from '../res';
+import { styles, commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
@@ -107,13 +107,13 @@ export default class SearchResults extends Component {
                 <View>
                     <View style={[styles.container, { alignItems: 'center', padding: 0 }]}>
                         <TouchableOpacity style={styles.opacityContainer} onPress={() => goBack()}>
-                            <Text style={styles.text}>Search Again</Text>
+                            <Text style={styles.textStyle}>SEARCH AGAIN</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.opacityContainer}
                             onPress={() => navigate('NewPatient')}
                         >
-                            <Text style={styles.text}>New Patient</Text>
+                            <Text style={styles.textStyle}>{commonStrings.txtNewPatient}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -159,7 +159,7 @@ const stylesSheet = StyleSheet.create({
         fontSize: 20,
         paddingRight: 10,
         paddingTop: 10,
-        paddingBottom: 10,
+        paddingBottom: 0,
         color: ColorSchema.THEME_COLOR_ONE,
     }
 });

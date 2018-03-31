@@ -24,7 +24,7 @@ export default class Patient extends Component {
                         style={styles.opacityContainer}
                         onPress={() => navigate('NewPatient')}
                     >
-                        <Text style={[styles.text, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                        <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                             {commonStrings.txtNewPatient}
                         </Text>
                     </TouchableOpacity>
@@ -35,7 +35,7 @@ export default class Patient extends Component {
                         style={styles.opacityContainer}
                         onPress={() => navigate('SearchExistingPatient')}
                     >
-                        <Text style={[styles.text, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                        <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                             {commonStrings.txtExistPatient}
                         </Text>
                     </TouchableOpacity>
@@ -43,5 +43,4 @@ export default class Patient extends Component {
             </View>
         );
     }
-
 }

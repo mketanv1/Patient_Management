@@ -32,7 +32,7 @@ export default class ExistingPatient extends Component {
         return (
             <ScrollView style={{ backgroundColor: ColorSchema.THEME_COLOR_TWO }}>
                 <View style={styles.container}>
-                    <Text style={[styles.text, { fontSize: ColorSchema.THEME_FONT_SIZE_FOUR }]}>
+                    <Text style={[styles.textStyle, { fontSize: ColorSchema.THEME_FONT_SIZE_FOUR }]}>
                         {this.state.patientName}</Text>
                     <Image
                         source={require('../images/ic_patient.jpg')}
@@ -41,24 +41,24 @@ export default class ExistingPatient extends Component {
 
                     <View style={{ flexDirection: 'row', alignSelf: 'center', paddingTop: 10 }}>
                         <View style={{ flexDirection: 'column' }}>
-                            <Text style={[styles.text, textContainer]}>DateOfBirth </Text>
+                            <Text style={[styles.textStyle, textContainer]}>DateOfBirth </Text>
                             <Text
-                                style={[styles.text, { padding: 1, alignSelf: 'flex-start' }]}
+                                style={[styles.textStyle, { padding: 1, alignSelf: 'flex-start' }]}
                             >
                                 Address
                             </Text>
                         </View>
 
                         <View style={{ flexDirection: 'column' }}>
-                            <Text style={[styles.text, textContainer]}>
+                            <Text style={[styles.textStyle, textContainer]}>
                                 : 12/05/1993
                             </Text>
-                            <Text style={[styles.text, { padding: 1 }]}>: Hills Stations</Text>
+                            <Text style={[styles.textStyle, { padding: 1 }]}>: Hills Stations</Text>
                         </View>
                     </View>
 
                     <View style={{ marginTop: 25, paddingTop: 20 }}>
-                        <Text style={[styles.text, { padding: 0 }]}>
+                        <Text style={[styles.textStyle, { padding: 0 }]}>
                             Is This Correct? Please confirm security is important
                         </Text>
 
