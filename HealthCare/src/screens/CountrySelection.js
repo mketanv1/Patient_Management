@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, ListView } from 'react-native';
-import ManageDB from '../Database/ManageDB';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ListView,
+} from 'react-native';
+import ManageDB from '../database/ManageDB';
 import { styles } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 
@@ -13,7 +18,6 @@ export default class CountrySelection extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedCountry: '',
       isLoading: true,
       countriesList: ds,
     };

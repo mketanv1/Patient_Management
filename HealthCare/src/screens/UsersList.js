@@ -7,7 +7,7 @@ import {
   View, 
   Alert 
 } from 'react-native';
-import ManageDB from '../Database/ManageDB';
+import ManageDB from '../database/ManageDB';
 
 const manageDatabase = new ManageDB();
 

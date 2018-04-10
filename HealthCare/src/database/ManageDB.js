@@ -10,13 +10,13 @@ const User = {
         first_name: 'string',
         last_name: 'string',
         email_address: 'string',
+        password: 'string',
         phone_number: 'string',
         employer_name: 'string',
         registration_year: 'string',
         selected_gender: 'string',
         selected_category: 'string',
         role: 'int',
-        password: 'string',
     }
 };
 
@@ -81,7 +81,7 @@ export default class ManageDB extends Component {
 
     createCountries(code, country, isAccessible) {
         realm.write(() => {
-            const newCountry = realm.create('Country', {
+            realm.create('Country', {
                 country_code: code,
                 country_name: country,
                 is_accessible: isAccessible,
@@ -99,24 +99,29 @@ export default class ManageDB extends Component {
         return result;
     }
 
-    AddUser(firstName, lastName, email, phoneNumber, employer,
-        firstYearOfRegistration, selectedGender,
-        selectedCategory, role, password) {
-        realm.write(() => {
-            const newUser = realm.create('User', {
-                user_id: '1',
-                first_name: firstName,
-                last_name: lastName,
-                email_address: email,
-                phone_number: phoneNumber,
-                employer_name: employer,
-                registration_year: firstYearOfRegistration,
-                selected_gender: selectedGender,
-                selected_category: selectedCategory,
-                role: role,
-                password: password,
+    AddUser(firstName, lastName, email, password, phoneNumber, employer,
+        firstYearOfRegistration, selectedGender, selectedCategory, role) {
+        try {
+            realm.write(() => {
+                realm.create('User', {
+                    user_id: '1',
+                    first_name: firstName,
+                    last_name: lastName,
+                    email_address: email,
+                    password,
+                    phone_number: phoneNumber,
+                    employer_name: employer,
+                    registration_year: firstYearOfRegistration,
+                    selected_gender: selectedGender,
+                    selected_category: selectedCategory,
+                    role,
+                });               
             });
-        });
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
     }
 
     render() {

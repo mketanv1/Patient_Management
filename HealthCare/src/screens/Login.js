@@ -5,32 +5,22 @@ import {
     View,
     Text,
     Image,
-    Alert,
     AsyncStorage,
+    ActivityIndicator
 } from 'react-native';
+import { connect } from 'react-redux';
 import { TextField } from 'react-native-material-textfield';
-import { styles, commonStrings } from '../res';
+import { styles } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button } from '../components/common';
-import ManageDB from '../Database/ManageDB';
 import * as WebApi from '../api/WebApi';
+import * as actions from '../actions';
+import * as utils from '../Utils';
 
-const manageDatabase = new ManageDB();
+class Login extends Component {
 
-export default class Login extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: '',
-            password: '',
-            emailError: '',
-            passwordError: '',
-        };
-    }
-
-    componentDidMount() {
-        AsyncStorage.multiGet(['email', 'password']).then((data) => {
+    async componentWillMount() {
+        await AsyncStorage.multiGet(['email', 'password']).then((data) => {
             const email = data[0][1];
             const password = data[1][1];
 
@@ -63,53 +53,36 @@ export default class Login extends Component {
             });
     }
 
-    loginFunction(navigator) {
-        /*      //Login through API
-                (async()=>{
-                    await this.getLoginSession(navigator);
-                })();
-        */
+    // loginFunction(navigator) {
+    //     /*      //Login through API
+    //             (async()=>{
+    //                 await this.getLoginSession(navigator);
+    //             })();
+    //     */
 
-        //Login through local DB
-        const { email, password } = this.state;
-        const result = manageDatabase.loginUser(email, password);
-        if (result.length === 1) {
-            AsyncStorage.multiSet([
-                ['email', email],
-                ['password', password]
-            ]);
-            navigator.navigate('CountrySelection');
+    onButtonPress() {        
+        const { email, password, emailAddressError, passwordError } = this.props;
+        if (!email || !password || !utils.validateEmail(email)) {            
+            emailAddressError(email);
+            passwordError(password);
         } else {
-            Alert.alert(
-                commonStrings.appName,
-                'Email-id or password is incorrect.');
+            this.props.loginUser(email, password, () => {                 
+                this.props.navigation.navigate('CountrySelection');
+            });
         }
     }
 
-    logIn = (navigator) => {
-        const { email, password } = this.state;
-
-        if (email === '') {
-            this.setState(() => ({ emailError: 'You must enter an email address' }));
-        } else if (!this.validateEmail(email)) {
-            this.setState(() => ({ emailError: 'Please enter a valid email address.' }));
-        } else if ((email > 0 && this.validateEmail(email)) || password === '') {
-            this.setState(() => ({ emailError: null }));
-            this.setState(() => ({ passwordError: 'You must enter a password' }));
-        } else {
-            this.setState(() => ({ emailError: null }));
-            this.setState(() => ({ passwordError: null }));
-
-            Keyboard.dismiss();
-            this.loginFunction(navigator);
+    renderButton() {
+        if (this.props.loading) {
+            return <ActivityIndicator size="large" color={ColorSchema.THEME_COLOR_ONE} />;
         }
-    }
 
-    validateEmail = (email) => {
-        const reg =
-            /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return reg.test(email);
-    };
+        return (
+            <Button onPress={this.onButtonPress.bind(this)}>
+                Login
+            </Button>
+        );
+    }
 
     render() {
         const { navigate } = this.props.navigation;
@@ -129,8 +102,8 @@ export default class Login extends Component {
 
                 <TextField
                     label='Email'
-                    value={this.state.email}
-                    onChangeText={(email) => this.setState({ email })}
+                    value={this.props.email}
+                    onChangeText={(email) => this.props.emailChanged(email)}
                     keyboardType='email-address'
                     enablesReturnKeyAutomatically={true}
                     tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -140,20 +113,15 @@ export default class Login extends Component {
                     fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
                     onSubmitEditing={() => { this.refs.password.focus(); }}
                     returnKeyType='next'
+                    error={this.props.emailError}
                 />
-                {!!this.state.emailError && (
-                    <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
-                        {this.state.emailError}
-                    </Text>
-                )}
 
                 <TextField
                     ref='password'
                     label='Password'
-                    value={this.state.password}
-                    onChangeText={(password) => this.setState({ password })}
+                    value={this.props.password}
+                    onChangeText={(password) => this.props.passwordChanged(password)}
                     secureTextEntry={true}
-                    clearTextOnFocus={true}
                     enablesReturnKeyAutomatically={true}
                     tintColor={ColorSchema.THEME_COLOR_ONE}
                     baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -163,19 +131,10 @@ export default class Login extends Component {
                     labelHeight={15}
                     onSubmitEditing={Keyboard.dismiss}
                     returnKeyType='done'
+                    error={this.props.pwdError}
                 />
-                {!!this.state.passwordError && (
-                    <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
-                        {this.state.passwordError}
-                    </Text>
-                )}
 
-                <Button
-                    btnStyle={{ marginTop: 30, paddingLeft: 25, paddingRight: 25 }}
-                    onPress={() => this.logIn(this.props.navigation)}
-                >
-                    LOG IN
-                </Button>
+                {this.renderButton()}
 
                 <Text style={textLink}> Not registered yet? </Text>
                 <Button
@@ -219,3 +178,10 @@ const stylesSheet = StyleSheet.create({
         justifyContent: 'center'
     }
 });
+
+const mapStateToProps = ({ auth }) => {
+    const { email, password, loading, emailError, pwdError } = auth;
+    return { email, password, loading, emailError, pwdError };
+};
+
+export default connect(mapStateToProps, actions)(Login);

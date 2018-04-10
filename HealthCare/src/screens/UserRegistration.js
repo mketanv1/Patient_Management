@@ -5,120 +5,89 @@ import {
     Text,
     ScrollView,
     Keyboard,
+    ActivityIndicator,
+    Alert
 } from 'react-native';
+import { connect } from 'react-redux';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
 import { TextField } from 'react-native-material-textfield';
-import { ListItem, CheckBox, Picker } from 'native-base';
-import ManageDB from '../Database/ManageDB';
-import { styles } from '../res';
+import { ListItem, CheckBox, Picker, StyleProvider } from 'native-base';
+import getTheme from '../../native-base-theme/components';
+import material from '../../native-base-theme/variables/material';
+import { styles, commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button } from '../components/common';
+import * as actions from '../actions';
+import * as utils from '../Utils';
 
-const manageDB = new ManageDB();
 
-export default class UserRegistration extends Component {
+class UserRegistration extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            firstName: '',
-            lastName: '',
-            email: '',
-            phoneNumber: '',
-            employer: '',
-            firstYearOfRegistration: '',
-            gender: '',
-            category: '',
-            role: '',
-            password: '',
-            checkedPolicy: false,
-            firstNameError: '',
-            lastNameError: '',
-            emailError: '',
-            roleError: '',
-        };
         this.onSelect = this.onSelect.bind(this);
         this.onSelectedCategory = this.onSelectedCategory.bind(this);
-    }
-
-    componentDidMount() {
-        this.setState({ gender: 'Male' });
-        this.setState({ category: 'Health Worker' });
     }
 
     /**
      * Calling  RadioButton
      */
     onSelect(index, value) {
-        this.setState({
-            gender: `${value}`
-        });
+        this.props.genderChanged(`${value}`);
     }
 
     onSelectedCategory(index, value) {
-        this.setState({
-            category: `${value}`
-        });
+        this.props.categoryChanged(`${value}`);
     }
 
     /**
      * submit registration from onClick
      */
-    onSubmit = (navigator) => {
-        if (this.state.firstName === '') {
-            this.refs.firstName.focus();
-            this.setState(() => ({ firstNameError: 'First name is required.' }));
-        } else if (!this.validateCommon(this.state.firstName)) {
-            this.refs.firstName.focus();
-            this.setState(() => ({ firstNameError: 'Please enter a valid first name.' }));
+    onSubmit = () => {
+        const {
+            firstName, lastName, email, password, confirmPassword, contact, employer,
+            firstYearOfRegistration, gender, category, role,
+            firstnameError, lastnameError, emailIdError, securePasswordError,
+            confirmSecurePasswordError, contactNumberError, employerNameError,
+            registerYearError, categoryRoleError, checkedPolicy, checkPolicy
+        } = this.props;
+
+        if (!firstName || !lastName || !email || !password || !contact || !confirmPassword ||
+            !employer || !firstYearOfRegistration || !role || !utils.validateEmail(email) ||
+            (confirmPassword !== password)) {
+            firstnameError(firstName);
+            lastnameError(lastName);
+            emailIdError(email);
+            securePasswordError(password);
+            confirmSecurePasswordError(password, confirmPassword);
+            contactNumberError(contact);
+            employerNameError(employer);
+            registerYearError(firstYearOfRegistration);
+            categoryRoleError(role);
+            checkPolicy(checkedPolicy);
+        } else if (!checkedPolicy) {
+            Alert.alert(commonStrings.appName, 'Please agree with our terms and condition.');
         } else {
-            this.setState(() => ({ firstNameError: null }));
+            this.props.userRegistration(
+                firstName,
+                lastName,
+                email,
+                password,
+                contact,
+                employer,
+                firstYearOfRegistration,
+                gender,
+                category,
+                role,
+                () => {
+                    this.props.navigation.navigate('Login');
+                });
+            Keyboard.dismiss();
         }
-
-        if (this.state.lastName === '') {
-            this.refs.lastName.focus();
-            this.setState(() => ({ lastNameError: 'Last name is required.' }));
-        } else if (!this.validateCommon(this.state.lastName)) {
-            this.refs.lastName.focus();
-            this.setState(() => ({ lastNameError: 'Please enter a valid last name.' }));
-        } else {
-            this.setState(() => ({ lastNameError: null }));
-        }
-
-        if (this.state.email === '') {
-            this.setState(() => ({ emailError: 'Email is required.' }));
-        } else if (!this.validateEmail(this.state.email)) {
-            this.refs.email.focus();
-            this.setState(() => ({ emailError: 'Please enter a valid email address.' }));
-        } else {
-            this.setState(() => ({ emailError: null }));
-        }
-
-        if (this.state.role === '') {
-            this.setState(() => ({ roleError: 'Select any one role.' }));
-        } else {
-            this.setState(() => ({ roleError: null }));
-        }
-
-        manageDB.AddUser(
-            this.state.firstName,
-            this.state.lastName,
-            this.state.email,
-            this.state.phoneNumber,
-            this.state.employer,
-            this.state.firstYearOfRegistration,
-            this.state.gender,
-            this.state.category,
-            this.state.role,
-            this.state.password,
-        );
-
-        navigator.navigate('Login');
-        Keyboard.dismiss();
     }
 
     getRoles() {
-        const selectedCategory = this.state.category;
+        const selectedCategory = this.props.category;
         if (selectedCategory === 'Health Worker') {
             return ['Select', 'Student', 'Untrained Volunteer', 'Community Health Worker'];
         } else if (selectedCategory === 'Allied Health') {
@@ -139,30 +108,30 @@ export default class UserRegistration extends Component {
         this.refs.scrollView.scrollTo({ y: 0 });
     }
 
-    validateCommon = (value) => {
-        const name = /^[a-zA-Z]+$/;
-        return name.test(value);
-    };
+    renderButton() {
+        if (this.props.loading) {
+            return <ActivityIndicator size="large" color={ColorSchema.THEME_COLOR_ONE} />;
+        }
 
-    validateEmail = (email) => {
-        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email);
-    };
-
-    validateNumeric = (numeric) => {
-        const numericExpression = /^[0-9]+$/;
-        return numericExpression.test(numeric);
-    };
+        return (
+            <Button
+                btnStyle={[stylesSheet.buttonContainer, { width: '60%' }]}
+                title="Create Account"
+                onPress={() => this.onSubmit()}
+            >
+                CREATE ACCOUNT
+            </Button>
+        );
+    }
 
 
     render() {
-        const { text, buttonContainer } = stylesSheet;
+        const { text } = stylesSheet;
         const options = this.getRoles();
 
         return (
             <ScrollView
                 overScrollMode='always'
-                // keyboardShouldPersistTaps="handled"
                 ref='scrollView'
             >
                 <View style={[styles.container, { paddingBottom: 0 }]}>
@@ -170,8 +139,8 @@ export default class UserRegistration extends Component {
                     <TextField
                         ref={'firstName'}
                         label='First Name'
-                        value={this.state.firstName}
-                        onChangeText={(firstName) => this.setState({ firstName })}
+                        value={this.props.firstName}
+                        onChangeText={(firstName) => this.props.firstNameChanged(firstName)}
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -182,18 +151,14 @@ export default class UserRegistration extends Component {
                         labelHeight={15}
                         onSubmitEditing={() => { this.refs.lastName.focus(); }}
                         returnKeyType='next'
+                        error={this.props.firstNameError}
                     />
-                    {!!this.state.firstNameError && (
-                        <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
-                            {this.state.firstNameError}
-                        </Text>
-                    )}
 
                     <TextField
                         ref={'lastName'}
                         label='Last Name'
-                        value={this.state.lastName}
-                        onChangeText={(lastName) => this.setState({ lastName })}
+                        value={this.props.lastName}
+                        onChangeText={(lastName) => this.props.lastNameChanged(lastName)}
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -204,18 +169,14 @@ export default class UserRegistration extends Component {
                         labelHeight={15}
                         onSubmitEditing={() => { this.refs.email.focus(); }}
                         returnKeyType='next'
+                        error={this.props.lastNameError}
                     />
-                    {!!this.state.lastNameError && (
-                        <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
-                            {this.state.lastNameError}
-                        </Text>
-                    )}
 
                     <TextField
                         ref={'email'}
                         label='Email Address'
-                        value={this.state.email}
-                        onChangeText={(email) => this.setState({ email })}
+                        value={this.props.email}
+                        onChangeText={(email) => this.props.emailAddressChanged(email)}
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -227,17 +188,14 @@ export default class UserRegistration extends Component {
                         keyboardType='email-address'
                         onSubmitEditing={() => { this.refs.password.focus(); }}
                         returnKeyType='next'
+                        error={this.props.emailError}
                     />
-                    {!!this.state.emailError && (
-                        <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
-                            {this.state.emailError}
-                        </Text>
-                    )}
+
                     <TextField
                         ref={'password'}
                         label='Password'
-                        value={this.state.password}
-                        onChangeText={(password) => this.setState({ password })}
+                        value={this.props.password}
+                        onChangeText={(password) => this.props.passwordValueChanged(password)}
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -249,11 +207,15 @@ export default class UserRegistration extends Component {
                         secureTextEntry={true}
                         onSubmitEditing={() => { this.refs.confirmPassword.focus(); }}
                         returnKeyType='next'
+                        error={this.props.passwordTypeError}
                     />
 
                     <TextField
                         ref={'confirmPassword'}
                         label='Confirm Password'
+                        value={this.props.confirmPassword}
+                        onChangeText={(confirmPassword) =>
+                            this.props.confirmedPasswordChanged(confirmPassword)}
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -263,15 +225,16 @@ export default class UserRegistration extends Component {
                         labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
                         labelHeight={15}
                         secureTextEntry={true}
-                        onSubmitEditing={() => { this.refs.phoneNumber.focus(); }}
+                        onSubmitEditing={() => { this.refs.contact.focus(); }}
                         returnKeyType='next'
+                        error={this.props.confirmPasswordError}
                     />
 
                     <TextField
-                        ref={'phoneNumber'}
+                        ref={'contact'}
                         label='Phone Number'
-                        value={this.state.phoneNumber}
-                        onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
+                        value={this.props.contact}
+                        onChangeText={(contact) => this.props.contactChanged(contact)}
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -280,16 +243,18 @@ export default class UserRegistration extends Component {
                         fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
                         labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
                         labelHeight={15}
+                        maxLength={10}
                         keyboardType='numeric'
                         onSubmitEditing={() => { this.refs.employer.focus(); }}
                         returnKeyType='next'
+                        error={this.props.contactError}
                     />
 
                     <TextField
                         ref={'employer'}
                         label='Employer'
-                        value={this.state.employer}
-                        onChangeText={(employer) => this.setState({ employer })}
+                        value={this.props.employer}
+                        onChangeText={(employer) => this.props.employerChanged(employer)}
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -300,16 +265,17 @@ export default class UserRegistration extends Component {
                         labelHeight={15}
                         onSubmitEditing={() => { this.refs.registrationYear.focus(); }}
                         returnKeyType='next'
+                        error={this.props.employerError}
                     />
 
                     <TextField
                         ref={'registrationYear'}
                         label='First Year of Registration'
-                        value={this.state.firstYearOfRegistration}
+                        value={this.props.firstYearOfRegistration}
                         onChangeText={
-                            (firstYearOfRegistration) => this.setState({
+                            (firstYearOfRegistration) => this.props.registrationYearChanged(
                                 firstYearOfRegistration
-                            })
+                            )
                         }
                         onFocus={this.myFocusFunction}
                         enablesReturnKeyAutomatically={true}
@@ -322,6 +288,7 @@ export default class UserRegistration extends Component {
                         maxLength={4}
                         keyboardType='numeric'
                         returnKeyType='next'
+                        error={this.props.registrationYearError}
                     />
 
                     <View style={{ flexDirection: 'row' }}>
@@ -380,44 +347,37 @@ export default class UserRegistration extends Component {
                             style={styles.pickerText}
                             mode="dropdown"
                             placeholder="Select One"
-                            selectedValue={this.state.role}
-                            onValueChange={
-                                (itemValue) => this.setState({ role: itemValue })
-                            }
+                            selectedValue={this.props.role}
+                            onValueChange={(role) => this.props.roleChanged(role)}
                         >
                             {options.map((item, index) => {
                                 return (<Picker.Item label={item} value={index} key={index} />);
                             })}
                         </Picker>
                     </View>
-
-                    {!!this.state.roleError && (
-                        <Text style={{ color: ColorSchema.THEME_COLOR_THREE }}>
-                            {this.state.roleError}
-                        </Text>
-                    )}
+                    {<Text style={{ color: 'red' }} >
+                        {this.props.roleError}
+                    </Text>}
                 </View>
                 <View style={[styles.container, { padding: 0 }]}>
-                    <ListItem style={{ borderBottomWidth: 0 }}>
-                        <CheckBox
-                            checked={this.state.checkedPolicy}
-                            style={{ padding: 2.5 }}
-                            color={ColorSchema.THEME_COLOR_ONE}
-                            onPress={() => this.setState({
-                                checkedPolicy: !this.state.checkedPolicy
-                            })}
-                        />
-                        <Text style={[text, { paddingLeft: 10, paddingRight: 5, paddingTop: 0 }]}>
-                            I have read a privacy statement and agree to abide by it.
-                    </Text>
-                    </ListItem>
+                    <StyleProvider style={getTheme(material)}>
+                        <ListItem style={{ borderBottomWidth: 0 }}>
+                            {console.log('check value', this.props.checkedPolicy)}
+                            <CheckBox
+                                checked={this.props.checkedPolicy}
+                                style={{ padding: 2.5 }}
+                                color={ColorSchema.THEME_COLOR_ONE}
+                                onPress={() => this.props.checkPolicy(!this.props.checkedPolicy)}
+                            />
+                            <Text
+                                style={[text, { paddingLeft: 10, paddingRight: 5, paddingTop: 0 }]}
+                            >
+                                I have read a privacy statement and agree to abide by it.
+                            </Text>
+                        </ListItem>
+                    </StyleProvider>
+                    {this.renderButton()}
 
-                    <Button
-                        btnStyle={[buttonContainer, { width: '60%' }]} title="Create Account"
-                        onPress={() => this.onSubmit(this.props.navigation)}
-                    >
-                        CREATE ACCOUNT
-                    </Button>
                 </View>
             </ScrollView>
         );
@@ -438,3 +398,38 @@ const stylesSheet = StyleSheet.create({
         width: '60%',
     },
 });
+
+const mapStateToProps = ({ registration }) => {
+    const {
+        firstName, lastName, email, password, confirmPassword, contact, employer,
+        firstYearOfRegistration, gender, category, role, loading, firstNameError, lastNameError,
+        emailError, passwordTypeError, confirmPasswordError, contactError, employerError,
+        registrationYearError, roleError, checkedPolicy
+    } = registration;
+    return {
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+        contact,
+        employer,
+        firstYearOfRegistration,
+        gender,
+        category,
+        role,
+        loading,
+        firstNameError,
+        lastNameError,
+        emailError,
+        passwordTypeError,
+        confirmPasswordError,
+        contactError,
+        employerError,
+        registrationYearError,
+        roleError,
+        checkedPolicy
+    };
+};
+
+export default connect(mapStateToProps, actions)(UserRegistration);
