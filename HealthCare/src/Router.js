@@ -17,7 +17,9 @@ import ExistingPatient from './screens/ExistingPatient';
 import SyncDataWithServer from './screens/SyncDataWithServer';
 import FamilyPlanning from './screens/FamilyPlanning';
 import CheckUp from './screens/CheckUp';
+import Pregnant from './screens/Pregnant';
 import ExistingPatientDetail from './screens/ExistingPatientDetail';
+import UserProfile from './screens/UserProfile';
 
 
 import * as ColorSchema from './res/ColorSchema';
@@ -67,6 +69,9 @@ const RouteConfigs = StackNavigator({
   sickOrInjured: { screen: SickOrInjured },
   FamilyPlanning: { screen: FamilyPlanning },
   CheckUp: { screen: CheckUp },
+  Pregnant: { screen: Pregnant },
+  UserProfile: { screen: UserProfile, navigationOptions: { title: 'User Profile' } },
+
 }, {
     headerMode: 'screen',
     navigationOptions: ({ navigation }) => ({

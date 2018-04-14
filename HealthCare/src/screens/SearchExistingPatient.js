@@ -1,47 +1,28 @@
 import React, { Component } from 'react';
 import {
     StyleSheet,
-    Text,
     View,
     ScrollView,
 } from 'react-native';
+import { connect } from 'react-redux';
 import { TextField } from 'react-native-material-textfield';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button } from '../components/common';
+import * as actions from '../actions';
 
-export default class SearchExistingPatient extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            surname: '',
-            firstName: '',
-            licenseNo: '',
-            emailAddress: '',
-            contactNo: '',
-        };
-    }
-
-    searchUser() {
-        const temp = false;
-        if (temp === true) {
-            //            navigator.navigate("Found");
-        } else {
-            //            navigator.navigate("Not_Found");
-        }
-    }
+class SearchExistingPatient extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-        const { container, textStyle, buttonContainer, viewContainer, textContainer } = stylesSheet;
+        const { container, buttonContainer, viewContainer, textContainer } = stylesSheet;
 
         return (
             <ScrollView style={container}>
                 <View style={{ marginBottom: 10 }}>
                     <TextField
                         label='Surname'
-                        value={this.state.surname}
-                        onChangeText={(surname) => this.setState({ surname })}
+                        value={this.props.surname}
+                        onChangeText={(surname) => this.props.existPatientSurnameChanged(surname)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -56,8 +37,9 @@ export default class SearchExistingPatient extends Component {
                     <TextField
                         ref='firstName'
                         label='First Name'
-                        value={this.state.firstName}
-                        onChangeText={(firstName) => this.setState({ firstName })}
+                        value={this.props.firstName}
+                        onChangeText={(firstName) =>
+                            this.props.existPatientFirstnameChanged(firstName)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -72,42 +54,9 @@ export default class SearchExistingPatient extends Component {
                     <TextField
                         ref='licenseNo'
                         label='License Number(#)'
-                        value={this.state.licenseNo}
-                        onChangeText={(licenseNo) => this.setState({ licenseNo })}
-                        enablesReturnKeyAutomatically={true}
-                        tintColor={ColorSchema.THEME_COLOR_ONE}
-                        baseColor={ColorSchema.THEME_COLOR_FOUR}
-                        textColor={ColorSchema.THEME_COLOR_ONE}
-                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
-                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
-                        labelHeight={15}
-                        keyboardType='numeric'                        
-                        onSubmitEditing={() => { this.refs.emailAddress.focus(); }}
-                        returnKeyType='next'
-                    />
-
-                    <TextField
-                        ref='emailAddress'
-                        label='Email'
-                        value={this.state.emailAddress}
-                        onChangeText={(emailAddress) => this.setState({ emailAddress })}
-                        enablesReturnKeyAutomatically={true}
-                        tintColor={ColorSchema.THEME_COLOR_ONE}
-                        baseColor={ColorSchema.THEME_COLOR_FOUR}
-                        textColor={ColorSchema.THEME_COLOR_ONE}
-                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
-                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
-                        labelHeight={15}
-                        keyboardType='email-address'                        
-                        onSubmitEditing={() => { this.refs.phone.focus(); }}
-                        returnKeyType='next'
-                    />
-
-                    <TextField
-                        ref='phone'
-                        label='Phone(#)'
-                        value={this.state.contactNo}
-                        onChangeText={(contactNo) => this.setState({ contactNo })}
+                        value={this.props.licenseNo}
+                        onChangeText={(licenseNo) =>
+                            this.props.existPatientLicenceNumberChanged(licenseNo)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -116,11 +65,48 @@ export default class SearchExistingPatient extends Component {
                         labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
                         labelHeight={15}
                         keyboardType='numeric'
+                        onSubmitEditing={() => { this.refs.emailAddress.focus(); }}
+                        returnKeyType='next'
+                    />
+
+                    <TextField
+                        ref='emailAddress'
+                        label='Email'
+                        value={this.props.emailAddress}
+                        onChangeText={(emailAddress) =>
+                            this.props.existPatientEmailChanged(emailAddress)}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        keyboardType='email-address'
+                        onSubmitEditing={() => { this.refs.phone.focus(); }}
+                        returnKeyType='next'
+                    />
+
+                    <TextField
+                        ref='phone'
+                        label='Phone(#)'
+                        value={this.props.contactNo}
+                        onChangeText={(contactNo) =>
+                            this.props.existPatientContactChanged(contactNo)}
+                        enablesReturnKeyAutomatically={true}
+                        tintColor={ColorSchema.THEME_COLOR_ONE}
+                        baseColor={ColorSchema.THEME_COLOR_FOUR}
+                        textColor={ColorSchema.THEME_COLOR_ONE}
+                        fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
+                        labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
+                        labelHeight={15}
+                        maxLength={10}
+                        keyboardType='numeric'
                         returnKeyType='done'
                     />
 
                     <View style={viewContainer} >
-{/*                         <Text style={textStyle}>
+                        {/*  <Text style={textStyle}>
                             ThumbPrint
                         </Text> */}
                         <Button btnStyle={buttonContainer} txtStyle={textContainer} >
@@ -129,7 +115,7 @@ export default class SearchExistingPatient extends Component {
                     </View>
 
                     <View style={viewContainer} >
-{/*                         <Text style={textStyle}>
+                        {/*  <Text style={textStyle}>
                             Iris Scan
                         </Text> */}
                         <Button btnStyle={buttonContainer} txtStyle={textContainer} >
@@ -141,7 +127,10 @@ export default class SearchExistingPatient extends Component {
                         {/*  <Text style={textStyle}>
                             Face Recognition
                         </Text > */}
-                        <Button btnStyle={[buttonContainer, {width:'60%'}]} txtStyle={textContainer} >
+                        <Button
+                            btnStyle={[buttonContainer, { width: '60%' }]}
+                            txtStyle={textContainer}
+                        >
                             Face Recognition
                         </Button>
                     </View>
@@ -197,3 +186,13 @@ const stylesSheet = StyleSheet.create({
         padding: 2,
     },
 });
+const mapStateToProps = ({ searchExistingPatient }) => {
+    const {
+        surname, firstName, licenseNo, emailAddress, contactNo, loading
+    } = searchExistingPatient;
+    return {
+        surname, firstName, licenseNo, emailAddress, contactNo, loading
+    };
+};
+
+export default connect(mapStateToProps, actions)(SearchExistingPatient);

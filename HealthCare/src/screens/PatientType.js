@@ -30,6 +30,8 @@ export default class PatientType extends Component {
             navigator.navigate('sickOrInjured', item);
         } else if (selectedPatientType === commonStrings.txtCheckUp) {
             navigator.navigate('CheckUp', item);
+        } else if (selectedPatientType === commonStrings.txtPregnant) {
+            navigator.navigate('Pregnant', item);
         } else if (selectedPatientType === commonStrings.txtFamilyPlanning) {
             navigator.navigate('FamilyPlanning', item);
         }

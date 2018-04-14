@@ -5,8 +5,6 @@ import {
     View,
     Text,
     Image,
-    ListView,
-    ActivityIndicator
 } from 'react-native';
 import { styles } from '../res';
 import * as ColorSchema from '../res/ColorSchema';

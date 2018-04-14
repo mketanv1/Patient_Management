@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import base64 from 'base-64';
 
 export const Realm = require('realm');
 
@@ -32,20 +33,21 @@ const Country = {
 const Patient = {
     name: 'Patient',
     properties: {
-        patient_id: { type: 'string' },
+        patient_id: 'int',
         first_name: 'string',
         middle_name: 'string',
         last_name: 'string',
-        province: 'string',
-        city: 'string',
+        province: 'int',
+        city: 'int',
         address: 'string',
-        birth_date: 'date?', //Optional
+        birth_date: 'date', //Optional
         gender: 'string',
-        marital_status: { type: 'string', optional: true },
+        marital_status: 'string',
+        // marital_status: { type: 'string', optional: true },        
         email_id: 'string',
         contact_no: 'string',
         photo: 'string',
-        thumb_print: 'string',
+        // thumb_print: 'string',
         license_no: 'string',
         blood_group: 'string',
         notes: 'string',
@@ -115,13 +117,51 @@ export default class ManageDB extends Component {
                     selected_gender: selectedGender,
                     selected_category: selectedCategory,
                     role,
-                });               
+                });
             });
             return true;
         } catch (error) {
             console.log(error);
             return false;
         }
+    }
+
+    AddPatient(patientFirstname, patientMiddleName, patientLastname, provineHolder, cityHolder,
+        patientAddress, dateOfBirth, patientGender, patientMaritalStatus, patientEmailAddress,
+        patientContact, patientImage, licenceNumber, bloodType, notes
+    ) {
+        // const encoded = base64.decode(patientImage);
+
+        try {
+            realm.write(() => {
+                realm.create('Patient', {
+                    patient_id: 1,
+                    first_name: patientFirstname,
+                    middle_name: patientMiddleName,
+                    last_name: patientLastname,
+                    province: provineHolder,
+                    city: cityHolder,
+                    address: patientAddress,
+                    birth_date: dateOfBirth,
+                    gender: patientGender,
+                    marital_status: patientMaritalStatus,
+                    email_id: patientEmailAddress,
+                    contact_no: patientContact,
+                    photo: patientImage,
+                    license_no: licenceNumber,
+                    blood_group: bloodType,
+                    notes,
+                });
+            });
+        } catch (error) {
+            console.log('Patient Error-->', error);
+            return false;
+        }
+    }
+
+    getAllNewPatient() {
+        const getNewPatient = realm.objects('Patient');
+        return getNewPatient;
     }
 
     render() {

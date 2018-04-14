@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import {
+    Platform,
     StyleSheet,
     Text,
     View,
     ScrollView,
     TouchableOpacity,
     Image,
+    ActivityIndicator,
 } from 'react-native';
+import { connect } from 'react-redux';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
 import { TextField } from 'react-native-material-textfield';
 import { DatePickerDialog } from 'react-native-datepicker-dialog';
@@ -16,7 +19,12 @@ import { Picker } from 'native-base';
 import { commonStrings, styles } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 import { Button } from '../components/common';
+import * as actions from '../actions';
+import * as utils from '../Utils';
 
+import ManageDB from '../database/ManageDB';
+
+const manageDatabase = new ManageDB();
 const provinceOptions = [
     'Select Province',
     'Alberta',
@@ -25,51 +33,26 @@ const provinceOptions = [
     'Nunavut',
 ];
 
-export default class NewPatient extends Component {
+class NewPatient extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            firstName: '',
-            middleName: '',
-            lastName: '',
-            provinceValueHolder: '',
-            cityValueHolder: '',
-            address: '',
-            dateText: '',
-            dateHolder: null,
-            gender: '',
-            maritalStatus: '',
-            emailAddress: '',
-            contactNo: '',
             imageSource: null,
-            licenceNo: '',
-            bloodType: '',
-            notes: '',
-            validate: false,
         };
         this.onSelectedGender = this.onSelectedGender.bind(this);
         this.onSelectedMaritalStatus = this.onSelectedMaritalStatus.bind(this);
     }
 
-    componentDidMount() {
-        this.setState({ gender: 'Male' });
-        this.setState({ maritalStatus: 'Single' });
-    }
-    
     /**
      * Calling  RadioButton
      */
     onSelectedGender(index, value) {
-        this.setState({
-            gender: `${value}`
-        });
+        this.props.patientGenderChanged(`${value}`);
     }
 
     onSelectedMaritalStatus(index, value) {
-        this.setState({
-            maritalStatus: `${value}`
-        });
+        this.props.patientMaritalStatusChanged(`${value}`);
     }
 
     /**
@@ -95,10 +78,18 @@ export default class NewPatient extends Component {
             } else if (response.customButton) {
                 console.log('User tapped custom button: ', response.customButton);
             } else {
-                const source = { uri: response.uri };
-                this.setState({
-                    imageSource: source
-                });
+                let source;
+                if (Platform.OS === 'android') {
+                    source = { uri: response.uri, isStatic: true };
+                } else {
+                    source = { uri: response.uri.replace('file://', ''), isStatic: true };
+                }
+                // source = { uri: 'data:image/jpg;base64,' + response.data, isStatic: true };
+                console.log('source==>', source);
+                // this.setState({ imageSource: response.uri });
+                this.setState({ imageSource: source });
+                console.log('response data===>', this.state.imageSource);
+                this.props.patientImageChanged(response.data);
             }
         });
     }
@@ -108,14 +99,11 @@ export default class NewPatient extends Component {
      */
 
     onDatePickedFunction = (date) => {
-        this.setState({
-            dobDate: date,
-            dateText: moment(date).format('DD-MMM-YYYY')
-        });
+        this.props.patientDOBChanged(moment(date).format('DD-MMM-YYYY'));
     }
 
     getCity() {
-        const selectedProvince = this.state.provinceValueHolder;
+        const selectedProvince = this.props.provineHolder;
         if (selectedProvince === 1) {
             return ['Select City', 'Bentley', 'Canmore'];
         } else if (selectedProvince === 2) {
@@ -124,15 +112,13 @@ export default class NewPatient extends Component {
             return ['Select City'];
         }
     }
-    
+
     DatePickerMainFunctionCall = () => {
-        DateHolder = this.state.dateHolder;
+        let DateHolder = this.props.dateHolder;
 
         if (!DateHolder || DateHolder == null) {
             DateHolder = new Date();
-            this.setState({
-                DateHolder: DateHolder
-            });
+            this.props.patientDateHolder(DateHolder);
         }
 
         //To open the dialog
@@ -141,8 +127,59 @@ export default class NewPatient extends Component {
         });
     }
 
+    onButtonPress() {
+        const {
+            patientFirstname, patientMiddleName, patientLastname, provineHolder, cityHolder,
+            patientAddress, dateOfBirth, patientGender, patientMaritalStatus, patientEmailAddress,
+            patientContact, patientImage, licenceNumber, bloodType, notes,
+            patientFirstnameError, patientMiddlenameError, patientLastnameError,
+            patientProvinceError, patientCityError, patientAddressError, patientDOBError,
+            patientEmailError, patientContactError, patientImageError, patientLicenceNumberError,
+            patientBloodTypeError
+        } = this.props;
+        if (!patientFirstname || !patientMiddleName || !patientLastname || !provineHolder ||
+            !cityHolder || !patientAddress || !dateOfBirth || !patientEmailAddress ||
+            !patientContact || !patientImage || !licenceNumber || !bloodType ||
+            !utils.validateEmail(patientEmailAddress)) {
+            patientFirstnameError(patientFirstname);
+            patientMiddlenameError(patientMiddleName);
+            patientLastnameError(patientLastname);
+            patientProvinceError(provineHolder);
+            patientCityError(cityHolder);
+            patientAddressError(patientAddress);
+            patientDOBError(dateOfBirth);
+            patientEmailError(patientEmailAddress);
+            patientContactError(patientContact);
+            patientImageError(patientImage);
+            patientLicenceNumberError(licenceNumber);
+            patientBloodTypeError(bloodType);
+        } else {
+               /*  const patient = await manageDatabase.AddPatient(patientFirstname,
+                    patientMiddleName, patientLastname, provineHolder, cityHolder, 
+                    patientAddress, dateOfBirth, patientGender, patientMaritalStatus,
+                    patientEmailAddress, patientContact,
+                    patientImage, licenceNumber, bloodType, notes); */
+
+                this.props.navigation.navigate('PatientType');
+        }
+    }
+
+    renderButton() {
+        if (this.props.loading) {
+            return <ActivityIndicator size="large" color={ColorSchema.THEME_COLOR_ONE} />;
+        }
+
+        return (
+            <Button
+                btnStyle={{ marginTop: 15, marginBottom: 20 }}
+                onPress={this.onButtonPress.bind(this)}
+            >
+                {commonStrings.txtSubmit}
+            </Button>
+        );
+    }
+
     render() {
-        const { navigate } = this.props.navigation;
         const {
             container,
             datePickerBox,
@@ -159,8 +196,9 @@ export default class NewPatient extends Component {
                     <TextField
                         ref={'firstName'}
                         label='First Name'
-                        value={this.state.firstName}
-                        onChangeText={(firstName) => this.setState({ firstName })}
+                        value={this.props.patientFirstname}
+                        onChangeText={(patientFirstname) =>
+                            this.props.patientFirstnameChanged(patientFirstname)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -170,13 +208,15 @@ export default class NewPatient extends Component {
                         labelHeight={15}
                         onSubmitEditing={() => { this.refs.middleName.focus(); }}
                         returnKeyType='next'
+                        error={this.props.patientFirstnameErr}
                     />
 
                     <TextField
                         ref={'middleName'}
                         label='Middle Name'
-                        value={this.state.middleName}
-                        onChangeText={(middleName) => this.setState({ middleName })}
+                        value={this.props.patientMiddleName}
+                        onChangeText={(patientMiddleName) =>
+                            this.props.patientMiddlenameChanged(patientMiddleName)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -186,13 +226,15 @@ export default class NewPatient extends Component {
                         labelHeight={15}
                         onSubmitEditing={() => { this.refs.lastName.focus(); }}
                         returnKeyType='next'
+                        error={this.props.patientMiddlenameErr}
                     />
 
                     <TextField
                         ref={'lastName'}
                         label='Last Name'
-                        value={this.state.lastName}
-                        onChangeText={(lastName) => this.setState({ lastName })}
+                        value={this.props.patientLastname}
+                        onChangeText={(patientLastname) =>
+                            this.props.patientLastnameChanged(patientLastname)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -201,51 +243,46 @@ export default class NewPatient extends Component {
                         labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
                         labelHeight={15}
                         returnKeyType='next'
+                        error={this.props.patientLastnameErr}
                     />
                     <Picker
                         style={styles.pickerText}
                         mode="dropdown"
                         placeholder="Select locality"
-                        selectedValue={this.state.provinceValueHolder}
-                        onValueChange={
-                            (itemValue) => this.setState({ provinceValueHolder: itemValue })
+                        selectedValue={this.props.provineHolder}
+                        onValueChange={(provineHolder) =>
+                            this.props.patientProvinceChanged(provineHolder)
                         }
                     >
                         {provinceOptions.map((item, index) => {
                             return (<Picker.Item label={item} value={index} key={index} />);
                         })}
                     </Picker>
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.4,
-                            marginBottom: 5,
-                        }}
-                    />
+                    <View style={styles.bottomLineStyle} />
+                    {<Text style={styles.errorTextStyle} >
+                        {this.props.patientProvinceErr}
+                    </Text>}
                     <Picker
                         style={styles.pickerText}
                         mode="dropdown"
                         placeholder="Select City"
-                        selectedValue={this.state.cityValueHolder}
-                        onValueChange={
-                            (itemValue) => this.setState({ cityValueHolder: itemValue })
+                        selectedValue={this.props.cityHolder}
+                        onValueChange={(cityHolder) => this.props.patientCityChanged(cityHolder)
                         }
                     >
                         {cityOptions.map((item, index) => {
                             return (<Picker.Item label={item} value={index} key={index} />);
                         })}
                     </Picker>
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.4,
-                            marginBottom: 5,
-                        }}
-                    />
+                    <View style={styles.bottomLineStyle} />
+                    {<Text style={styles.errorTextStyle} >
+                        {this.props.patientCityErr}
+                    </Text>}
                     <TextField
                         label='Address'
-                        value={this.state.address}
-                        onChangeText={(address) => this.setState({ address })}
+                        value={this.props.patientAddress}
+                        onChangeText={(patientAddress) =>
+                            this.props.patientAddressChanged(patientAddress)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -254,16 +291,21 @@ export default class NewPatient extends Component {
                         labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
                         labelHeight={15}
                         returnKeyType='next'
+                        error={this.props.patientAddressErr}
                     />
 
                     <TouchableOpacity onPress={this.DatePickerMainFunctionCall.bind(this)} >
                         <View style={datePickerBox}>
                             <Text style={datePickerText} >{
-                                !this.state.dateText ? ('Select Date Of Birth') : this.state.dateText
+                                !this.props.dateOfBirth ?
+                                    ('Select Date Of Birth') :
+                                    this.props.dateOfBirth
                             }</Text>
                         </View>
                     </TouchableOpacity>
-
+                    {<Text style={styles.errorTextStyle} >
+                        {this.props.patientDOBErr}
+                    </Text>}
                     <DatePickerDialog
                         ref="DatePickerDialog"
                         onDatePicked={this.onDatePickedFunction.bind(this)}
@@ -314,8 +356,9 @@ export default class NewPatient extends Component {
                     <TextField
                         ref={'emailAddress'}
                         label='Email'
-                        value={this.state.emailAddress}
-                        onChangeText={(emailAddress) => this.setState({ emailAddress })}
+                        value={this.props.patientEmailAddress}
+                        onChangeText={(patientEmailAddress) =>
+                            this.props.patientEmailChanged(patientEmailAddress)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -326,13 +369,15 @@ export default class NewPatient extends Component {
                         keyboardType='email-address'
                         onSubmitEditing={() => { this.refs.contactNo.focus(); }}
                         returnKeyType='next'
+                        error={this.props.patientEmailErr}
                     />
 
                     <TextField
                         ref={'contactNo'}
                         label='Contact No'
-                        value={this.state.contactNo}
-                        onChangeText={(contactNo) => this.setState({ contactNo })}
+                        value={this.props.patientContact}
+                        onChangeText={(patientContact) =>
+                            this.props.patientContactChanged(patientContact)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -340,8 +385,10 @@ export default class NewPatient extends Component {
                         fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
                         labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
                         labelHeight={15}
+                        maxLength={10}
                         keyboardType='numeric'
                         returnKeyType='next'
+                        error={this.props.patientContactErr}
                     />
 
                     <View style={{ flexDirection: 'row' }}>
@@ -349,7 +396,7 @@ export default class NewPatient extends Component {
                         <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
                             <View style={ImageContainer}>
                                 {
-                                    this.state.imageSource === null
+                                    this.props.patientImage === null
                                         ?
                                         <Text style={txtStyle}>Select a Photo</Text>
                                         :
@@ -361,24 +408,21 @@ export default class NewPatient extends Component {
                             </View>
                         </TouchableOpacity>
                     </View>
+                    {<Text style={styles.errorTextStyle} >
+                        {this.props.patientImageErr}
+                    </Text>}
 
                     <Text style={[textStyle, { marginBottom: 5 }]}>
                         ThumbPrint
                     </Text>
-
-                    <View
-                        style={{
-                            borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                            borderBottomWidth: 0.4,
-                            marginBottom: 5,
-                        }}
-                    />
+                    <View style={styles.bottomLineStyle} />
 
                     <TextField
                         ref={'licenceNo'}
                         label='Licence No'
-                        value={this.state.licenceNo}
-                        onChangeText={(licenceNo) => this.setState({ licenceNo })}
+                        value={this.props.licenceNumber}
+                        onChangeText={(licenceNumber) =>
+                            this.props.patientLicenceNumberChanged(licenceNumber)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -389,13 +433,14 @@ export default class NewPatient extends Component {
                         keyboardType='numeric'
                         onSubmitEditing={() => { this.refs.bloodType.focus(); }}
                         returnKeyType='next'
+                        error={this.props.patientLicenceNumberErr}
                     />
 
                     <TextField
                         ref={'bloodType'}
                         label='Blood Type'
-                        value={this.state.bloodType}
-                        onChangeText={(bloodType) => this.setState({ bloodType })}
+                        value={this.props.bloodType}
+                        onChangeText={(bloodType) => this.props.patientBloodTypeChanged(bloodType)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -403,15 +448,17 @@ export default class NewPatient extends Component {
                         fontSize={ColorSchema.THEME_FONT_SIZE_ONE}
                         labelFontSize={ColorSchema.THEME_FONT_SIZE_FIVE}
                         labelHeight={15}
+                        maxLength={3}
                         onSubmitEditing={() => { this.refs.notes.focus(); }}
                         returnKeyType='next'
+                        error={this.props.patientBloodTypeErr}
                     />
 
                     <TextField
                         ref={'notes'}
                         label='Notes'
-                        value={this.state.notes}
-                        onChangeText={(notes) => this.setState({ notes })}
+                        value={this.props.notes}
+                        onChangeText={(notes) => this.props.patientNotesChanged(notes)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -422,15 +469,7 @@ export default class NewPatient extends Component {
                         returnKeyType='done'
                     />
 
-                    <Button
-                        btnStyle={{
-                            marginTop: 15,
-                            marginBottom: 20,
-                        }}
-                        onPress={() => navigate('PatientType')}
-                    >
-                        {commonStrings.txtSubmit}
-                    </Button>
+                    {this.renderButton()}
                 </View>
             </ScrollView>
         );
@@ -491,3 +530,46 @@ const stylesSheet = StyleSheet.create({
         backgroundColor: ColorSchema.THEME_COLOR_ONE,
     }
 });
+
+const mapStateToProps = ({ newPatient }) => {
+    const { patientFirstname, patientMiddleName, patientLastname, provineHolder, cityHolder,
+        patientAddress, dateOfBirth, dateHolder, patientGender, patientMaritalStatus,
+        patientEmailAddress, patientContact, patientImage, licenceNumber, bloodType, notes, loading,
+        patientFirstnameErr, patientMiddlenameErr, patientLastnameErr, patientProvinceErr,
+        patientCityErr, patientAddressErr, patientDOBErr, patientEmailErr, patientContactErr,
+        patientImageErr, patientLicenceNumberErr, patientBloodTypeErr
+    } = newPatient;
+    return {
+        patientFirstname,
+        patientMiddleName,
+        patientLastname,
+        provineHolder,
+        cityHolder,
+        patientAddress,
+        dateOfBirth,
+        dateHolder,
+        patientGender,
+        patientMaritalStatus,
+        patientEmailAddress,
+        patientContact,
+        patientImage,
+        licenceNumber,
+        bloodType,
+        notes,
+        loading,
+        patientFirstnameErr,
+        patientMiddlenameErr,
+        patientLastnameErr,
+        patientProvinceErr,
+        patientCityErr,
+        patientAddressErr,
+        patientDOBErr,
+        patientEmailErr,
+        patientContactErr,
+        patientImageErr,
+        patientLicenceNumberErr,
+        patientBloodTypeErr,
+    };
+};
+
+export default connect(mapStateToProps, actions)(NewPatient);

@@ -12,12 +12,20 @@ import { CardSection } from '../components/common';
 
 export default class HomeScreen extends Component {
 
-    componentDidMount() {
+    /* componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', BackHandler.exitApp);
-    } 
+    } */
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', BackHandler.exitApp);
+        BackHandler.removeEventListener('hardwareBackPress', this.onBackHandler);
+    }
+
+    onBackHandler = () => {
+        if (this.constructor.name === 'HomeScreen') {
+            this.props.navigation.goBack();
+            return true;
+        }
+        return false;
     }
 
     render() {
@@ -34,33 +42,36 @@ export default class HomeScreen extends Component {
                 <View style={{ flex: 1, justifyContent: 'center', }}>
 
                     <CardSection>
-                        <TouchableOpacity 
-                            style={styles.opacityContainer} 
+                        <TouchableOpacity
+                            style={styles.opacityContainer}
                             onPress={() => navigate('HomePatient')}
                         >
-                            <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                            <Text
+                                style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                                 {commonStrings.txtPatient}
                             </Text>
                         </TouchableOpacity>
                     </CardSection>
 
                     <CardSection>
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={styles.opacityContainer}
                             onPress={() => console.log('report')}
                         >
-                            <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                            <Text
+                                style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                                 {commonStrings.txtReport}
                             </Text>
                         </TouchableOpacity>
                     </CardSection>
 
                     <CardSection>
-                        <TouchableOpacity 
-                            style={styles.opacityContainer} 
-                            onPress={() => console.log('user profile')}
+                        <TouchableOpacity
+                            style={styles.opacityContainer}
+                            onPress={() => navigate('UserProfile')}
                         >
-                            <Text style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
+                            <Text
+                                style={[styles.textStyle, { color: ColorSchema.THEME_COLOR_TWO }]}>
                                 {commonStrings.txtUserProfile}
                             </Text>
                         </TouchableOpacity>
@@ -71,4 +82,3 @@ export default class HomeScreen extends Component {
         );
     }
 }
-

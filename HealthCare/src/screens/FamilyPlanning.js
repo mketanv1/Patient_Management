@@ -6,15 +6,17 @@ import {
     Text,
     TextInput,
 } from 'react-native';
+import { connect } from 'react-redux';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
 import { TextField } from 'react-native-material-textfield';
 import { Picker } from 'native-base';
 import { styles, commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
-import { Button, RadioOptions } from '../components/common';
+import { Button } from '../components/common';
 import { toTitleCase } from '../Utils';
+import * as actions from '../actions';
 
-export default class FamilyPlanning extends Component {
+class FamilyPlanning extends Component {
 
     static navigationOptions = props => {
         const { navigation } = props;
@@ -27,27 +29,14 @@ export default class FamilyPlanning extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            numOfPregnancies: '',
-            numOfLiveBirths: '',
-            contraceptionMethod: '',
-            doneSTIScreen: '',
-            additionalNotes: '',
-        };
         this.onSelectedSTIScreen = this.onSelectedSTIScreen.bind(this);
-    }
-
-    componentDidMount() {
-        this.setState({ doneSTIScreen: 'Yes' });
     }
 
     /**
      * Calling  RadioButton
      */
     onSelectedSTIScreen(index, value) {
-        this.setState({
-            gender: `${value}`
-        });
+        this.props.doneSTIScreenChanged(`${value}`);
     }
 
     render() {
@@ -71,8 +60,9 @@ export default class FamilyPlanning extends Component {
                 <View style={[styles.container, { justifyContent: 'flex-start', paddingTop: 5 }]}>
                     <TextField
                         label='Number Of Pregnancies'
-                        value={this.state.numOfPregnancies}
-                        onChangeText={(numOfPregnancies) => this.setState({ numOfPregnancies })}
+                        value={this.props.numOfPregnancies}
+                        onChangeText={(numOfPregnancies) =>
+                            this.props.numOfPregnanciesChanged(numOfPregnancies)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -86,8 +76,9 @@ export default class FamilyPlanning extends Component {
 
                     <TextField
                         label='Number Of Live Births'
-                        value={this.state.numOfLiveBirths}
-                        onChangeText={(numOfLiveBirths) => this.setState({ numOfLiveBirths })}
+                        value={this.props.numOfLiveBirths}
+                        onChangeText={(numOfLiveBirths) =>
+                            this.props.numOfLiveBirthsChanged(numOfLiveBirths)}
                         enablesReturnKeyAutomatically={true}
                         tintColor={ColorSchema.THEME_COLOR_ONE}
                         baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -105,9 +96,9 @@ export default class FamilyPlanning extends Component {
                             style={styles.pickerText}
                             mode="dropdown"
                             placeholder='Select'
-                            selectedValue={this.state.contraceptionMethod}
-                            onValueChange={
-                                (itemValue) => this.setState({ contraceptionMethod: itemValue })
+                            selectedValue={this.props.contraceptionMethod}
+                            onValueChange={(contraceptionMethod) =>
+                                this.props.contraceptionMethodChanged(contraceptionMethod)
                             }
                         >
                             {options.map((item, index) => {
@@ -147,8 +138,9 @@ export default class FamilyPlanning extends Component {
                         placeholderTextColor={ColorSchema.INPUT_TEXT_ANIM_COLOR}
                         underlineColorAndroid={ColorSchema.TRANSPARENT_COLOR}
                         style={textInputContainer}
-                        value={this.state.additionalNotes}
-                        onChangeText={(text) => this.setState({ additionalNotes: text })}
+                        value={this.props.additionalNotes}
+                        onChangeText={(additionalNotes) =>
+                            this.props.additionalNotesChanged(additionalNotes)}
                         multiline={true}
                         numberOfLines={4}
                     />
@@ -190,3 +182,17 @@ const stylesSheet = StyleSheet.create({
         marginBottom: 10
     },
 });
+
+const mapStateToProps = ({ familyPlanning }) => {
+    const { numOfPregnancies, numOfLiveBirths, contraceptionMethod, doneSTIScreen,
+        additionalNotes, loading } = familyPlanning;
+    return {
+        numOfPregnancies,
+        numOfLiveBirths,
+        contraceptionMethod,
+        doneSTIScreen,
+        additionalNotes,
+        loading
+    };
+};
+export default connect(mapStateToProps, actions)(FamilyPlanning);

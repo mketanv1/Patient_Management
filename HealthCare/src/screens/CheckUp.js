@@ -4,15 +4,18 @@ import {
     ScrollView,
     View,
     Text,
+    ActivityIndicator
 } from 'react-native';
+import { connect } from 'react-redux';
 import { TextField } from 'react-native-material-textfield';
 import { Button } from '../components/common';
 import { styles, commonStrings } from '../res';
 import * as ColorSchema from '../res/ColorSchema';
 import { toTitleCase } from '../Utils';
+import * as actions from '../actions';
 
 
-export default class CheckUp extends Component {
+class CheckUp extends Component {
 
     static navigationOptions = props => {
         const { navigation } = props;
@@ -24,27 +27,30 @@ export default class CheckUp extends Component {
         };
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            bloodPressure: '',
-            heartRate: '',
-            weight: '',
-            waistCircumference: '',
-            SpO2: '',
-            fev: '',
-            cholesterol: '',
-            bloodGlucose: '',
-            otherTest: '',
-            notes: '',
-        };
+    onButtonPress() {
+        console.log('submit checkup');
+    }
+
+    renderButton() {
+        if (this.props.loading) {
+            return <ActivityIndicator size="large" color={ColorSchema.THEME_COLOR_ONE} />;
+        }
+
+        return (
+            <Button
+                btnStyle={stylesSheet.buttonStyle}
+                txtStyle={styles.textSize}
+                onPress={this.onButtonPress.bind(this)}
+            >
+                {commonStrings.txtSubmit}
+            </Button>
+        );
     }
 
     render() {
         const {
             containerStyle,
             columnContainerStyle,
-            buttonStyle
         } = stylesSheet;
 
         return (
@@ -73,8 +79,9 @@ export default class CheckUp extends Component {
                         <View style={columnContainerStyle} >
                             <TextField
                                 label='Blood Pressure'
-                                value={this.state.bloodPressure}
-                                onChangeText={(bloodPressure) => this.setState({ bloodPressure })}
+                                value={this.props.bloodPressure}
+                                onChangeText={(bloodPressure) =>
+                                    this.props.bloodPressureChanged(bloodPressure)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -89,8 +96,8 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'weight'}
                                 label='Weight'
-                                value={this.state.weight}
-                                onChangeText={(weight) => this.setState({ weight })}
+                                value={this.props.weight}
+                                onChangeText={(weight) => this.props.weightChanged(weight)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -105,8 +112,8 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'spO2'}
                                 label='SpO2'
-                                value={this.state.SpO2}
-                                onChangeText={(SpO2) => this.setState({ SpO2 })}
+                                value={this.props.SpO2}
+                                onChangeText={(SpO2) => this.props.spoChanged(SpO2)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -121,8 +128,9 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'cholesterol'}
                                 label='Cholesterol'
-                                value={this.state.cholesterol}
-                                onChangeText={(cholesterol) => this.setState({ cholesterol })}
+                                value={this.props.cholesterol}
+                                onChangeText={(cholesterol) =>
+                                    this.props.cholesterolChanged(cholesterol)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -137,8 +145,9 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'otherTest'}
                                 label='Other Test'
-                                value={this.state.otherTest}
-                                onChangeText={(otherTest) => this.setState({ otherTest })}
+                                value={this.props.otherTest}
+                                onChangeText={(otherTest) =>
+                                    this.props.otherTestChanged(otherTest)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -154,8 +163,9 @@ export default class CheckUp extends Component {
                         <View style={columnContainerStyle}>
                             <TextField
                                 label='Heart Rate'
-                                value={this.state.heartRate}
-                                onChangeText={(heartRate) => this.setState({ heartRate })}
+                                value={this.props.heartRate}
+                                onChangeText={(heartRate) =>
+                                    this.props.heartRateChanged(heartRate)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -169,11 +179,11 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'waistCircumference'}
                                 label='Waist Circumference'
-                                value={this.state.waistCircumference}
+                                value={this.props.waistCircumference}
                                 onChangeText={
-                                    (waistCircumference) => this.setState({
+                                    (waistCircumference) => this.props.waistCircumferenceChanged(
                                         waistCircumference
-                                    })
+                                    )
                                 }
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
@@ -188,8 +198,8 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'fev'}
                                 label='F.E.V'
-                                value={this.state.fev}
-                                onChangeText={(fev) => this.setState({ fev })}
+                                value={this.props.fev}
+                                onChangeText={(fev) => this.props.fevChanged(fev)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -203,8 +213,9 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'bloodGlucose'}
                                 label='Blood Glucose'
-                                value={this.state.bloodGlucose}
-                                onChangeText={(bloodGlucose) => this.setState({ bloodGlucose })}
+                                value={this.props.bloodGlucose}
+                                onChangeText={(bloodGlucose) =>
+                                    this.props.bloodGlucoseChanged(bloodGlucose)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -218,8 +229,8 @@ export default class CheckUp extends Component {
                             <TextField
                                 ref={'notes'}
                                 label='Notes'
-                                value={this.state.notes}
-                                onChangeText={(notes) => this.setState({ notes })}
+                                value={this.props.notes}
+                                onChangeText={(notes) => this.props.notesChanged(notes)}
                                 enablesReturnKeyAutomatically={true}
                                 tintColor={ColorSchema.THEME_COLOR_ONE}
                                 baseColor={ColorSchema.THEME_COLOR_FOUR}
@@ -234,16 +245,9 @@ export default class CheckUp extends Component {
                     </View>
 
                     <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
+                        {this.renderButton()}
                         <Button
-                            btnStyle={buttonStyle}
-                            txtStyle={styles.textSize}
-                            onPress={() => console.log('Submited')}
-                        >
-                            {commonStrings.txtSubmit}
-                        </Button>
-
-                        <Button
-                            btnStyle={[buttonStyle, { width: '60%' }]}
+                            btnStyle={[stylesSheet.buttonStyle, { width: '60%' }]}
                             txtStyle={styles.textSize}
                             onPress={() => console.log('Sick or Injured')}
                         >
@@ -272,3 +276,23 @@ const stylesSheet = StyleSheet.create({
         paddingRight: 20
     },
 });
+
+const mapStateToProps = ({ checkUp }) => {
+    const { bloodPressure, heartRate, weight, waistCircumference, SpO2, fev, cholesterol,
+        bloodGlucose, otherTest, notes, loading } = checkUp;
+    return {
+        bloodPressure,
+        heartRate,
+        weight,
+        waistCircumference,
+        SpO2,
+        fev,
+        cholesterol,
+        bloodGlucose,
+        otherTest,
+        notes,
+        loading
+    };
+};
+
+export default connect(mapStateToProps, actions)(CheckUp);

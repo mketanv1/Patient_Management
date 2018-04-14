@@ -58,6 +58,15 @@ const styles = StyleSheet.create({
     radioButtonStyle: {
         color: ColorSchema.THEME_COLOR_ONE,
         fontSize: ColorSchema.THEME_FONT_SIZE_ONE,
+    },
+    bottomLineStyle: {
+        borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
+        borderBottomWidth: 0.4,
+        marginBottom: 5,
+    },
+    errorTextStyle: {
+        fontSize: 12, 
+        color: 'rgb(213, 0, 0)'
     }
 });
 

@@ -72,10 +72,7 @@ export default class CountrySelection extends Component {
                 {
                   (rowData.country_code !== 'code9') ?
                     <View
-                      style={{
-                        borderBottomColor: ColorSchema.INPUT_TEXT_ANIM_COLOR,
-                        borderBottomWidth: 0.5,
-                      }}
+                      style={[styles.bottomLineStyle, { marginBottom: 0 }]}
                     />
                     : <View />
                 }

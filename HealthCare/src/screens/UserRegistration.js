@@ -355,7 +355,7 @@ class UserRegistration extends Component {
                             })}
                         </Picker>
                     </View>
-                    {<Text style={{ color: 'red' }} >
+                    {<Text style={styles.errorTextStyle} >
                         {this.props.roleError}
                     </Text>}
                 </View>
